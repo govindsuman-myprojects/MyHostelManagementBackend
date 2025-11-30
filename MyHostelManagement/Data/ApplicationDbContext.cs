@@ -57,6 +57,32 @@ namespace MyHostelManagement.Api.Data
                 entity.Property(e => e.UpdatedAt)
                       .HasColumnName("updated_at");
             });
+
+            builder.Entity<Room>(entity =>
+            {
+                entity.ToTable("rooms");   // table name EXACTLY as in PostgreSQL
+
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id)
+                      .HasColumnName("id"); // column name
+
+                entity.Property(e => e.HostelId)
+                      .HasColumnName("hostel_id");
+
+                entity.Property(e => e.RoomNumber)
+                      .HasColumnName("room_number");
+
+                entity.Property(e => e.Capacity)
+                      .HasColumnName("capacity");
+
+                entity.Property(e => e.Type)
+                      .HasColumnName("type");
+
+                entity.Property(e => e.Rent)
+                      .HasColumnName("rent");
+
+            });
             builder.Entity<Bed>().HasIndex(b => b.Status);
             builder.Entity<Tenant>().HasIndex(t => t.Phone);
             builder.Entity<Payment>().HasIndex(p => new { p.Month, p.Year });

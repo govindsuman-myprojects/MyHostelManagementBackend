@@ -49,6 +49,9 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+
+
+
 builder.Services.AddAuthorization();
 
 // Repositories & UnitOfWork
@@ -80,6 +83,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+//// Fallter flow
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowAll",
+//        b => b.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+//});
+//app.UseCors("AllowAll");
 
 app.UseStaticFiles(); // serve wwwroot
 app.UseRouting();

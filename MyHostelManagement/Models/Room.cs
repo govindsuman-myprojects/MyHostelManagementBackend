@@ -8,5 +8,6 @@ public class Room
     public string RoomNumber { get; set; } = null!;
     public int Capacity { get; set; }
     public decimal? Rent { get; set; }
+    public string Type { get; set; } = null!;
     public ICollection<Bed> Beds { get; set; } = new List<Bed>();
 }

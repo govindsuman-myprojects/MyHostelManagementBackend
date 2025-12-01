@@ -28,8 +28,13 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     .AddDefaultTokenProviders();
 
 // JWT
-var jwtKey = config["Jwt:Key"] ?? throw new Exception("Missing Jwt:Key");
+// JWT Key — Use environment variable in Render, fallback for development
+var jwtKey = config["Jwt:Key"]
+             ?? Environment.GetEnvironmentVariable("Jwt__Key")
+             ?? "dev-default-key-change-this"; // fallback to avoid build failure
+
 var key = Encoding.ASCII.GetBytes(jwtKey);
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

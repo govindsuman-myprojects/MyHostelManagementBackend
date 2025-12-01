@@ -76,6 +76,13 @@ builder.Services.AddSwaggerGen();
 // Allow static files (for mockup / docs)
 builder.Services.AddDirectoryBrowser();
 
+// Fallter flow
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        b => b.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -84,13 +91,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//// Fallter flow
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowAll",
-//        b => b.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-//});
-//app.UseCors("AllowAll");
+app.UseCors("AllowAll");
 
 app.UseStaticFiles(); // serve wwwroot
 app.UseRouting();

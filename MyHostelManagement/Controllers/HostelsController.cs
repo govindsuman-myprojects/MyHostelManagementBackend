@@ -29,4 +29,11 @@ public class HostelsController : ControllerBase
 
     [HttpGet]
     public async Task<IActionResult> List() => Ok(await _hostelService.GetAllAsync());
+
+    [HttpGet("owner-dashboard/{id}")]
+    public async Task<IActionResult> GetOwnerDashboard(Guid id)
+    {
+        var response = await _hostelService.GetOwnerDashboardAsync(id);
+        return Ok(response);
+    }
 }

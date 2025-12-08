@@ -1,14 +1,16 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using MyHostelManagement.Api.Services.Implementations;
-using MyHostelManagement.Api.Services.Interfaces;
+using Microsoft.IdentityModel.Tokens;
 using MyHostelManagement.Api.Data;
 using MyHostelManagement.Api.Models;
 using MyHostelManagement.Api.Repositories.Implementations;
 using MyHostelManagement.Api.Repositories.Interfaces;
+using MyHostelManagement.Api.Services.Implementations;
+using MyHostelManagement.Api.Services.Interfaces;
+using MyHostelManagement.Repositories.Implementations;
+using MyHostelManagement.Repositories.Interfaces;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -70,6 +72,7 @@ builder.Services.AddScoped<IHostelService, HostelService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<ITenantService, TenantService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IHostelRepository, HostelRepository>();
 
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(Program).Assembly);

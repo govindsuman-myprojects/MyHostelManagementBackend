@@ -29,4 +29,6 @@ public class RoomsController : ControllerBase
 
     //[HttpGet]
     //public async Task<IActionResult> List() => Ok(await _roomService.GetAllAsync());
+
+    
 }

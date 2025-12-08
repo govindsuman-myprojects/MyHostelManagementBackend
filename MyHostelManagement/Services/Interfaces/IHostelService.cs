@@ -8,4 +8,5 @@ public interface IHostelService
     Task<Hostel> CreateAsync(HostelDto dto);
     Task<Hostel?> GetByIdAsync(Guid id);
     Task<IEnumerable<Hostel>> GetAllAsync();
+    Task<OwnerDashboardResponse> GetOwnerDashboardAsync(Guid id);
 }

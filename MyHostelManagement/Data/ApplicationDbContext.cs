@@ -83,9 +83,63 @@ namespace MyHostelManagement.Api.Data
                       .HasColumnName("rent");
 
             });
-            builder.Entity<Bed>().HasIndex(b => b.Status);
+            builder.Entity<Bed>(entity =>
+            {
+                entity.ToTable("beds");   // table name EXACTLY as in PostgreSQL
+
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id)
+                      .HasColumnName("id"); // column name
+
+                entity.Property(e => e.RoomId)
+                      .HasColumnName("room_id");
+
+                entity.Property(e => e.HostelId)
+                      .HasColumnName("hostel_id");
+
+                entity.Property(e => e.BedNumber)
+                      .HasColumnName("bed_number");
+
+                entity.Property(e => e.Status)
+                      .HasColumnName("status");
+
+            });
             builder.Entity<Tenant>().HasIndex(t => t.Phone);
-            builder.Entity<Payment>().HasIndex(p => new { p.Month, p.Year });
+            builder.Entity<Payment>(entity =>
+            {
+                entity.ToTable("payments");   // table name EXACTLY as in PostgreSQL
+
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id)
+                      .HasColumnName("id"); // column name
+
+                entity.Property(e => e.TenantId)
+                      .HasColumnName("tenant_id");
+
+                entity.Property(e => e.HostelId)
+                      .HasColumnName("hostel_id");
+
+                entity.Property(e => e.Amount)
+                      .HasColumnName("amount");
+
+                entity.Property(e => e.Month)
+                      .HasColumnName("month");
+
+                entity.Property(e => e.Year)
+                      .HasColumnName("year");
+
+                entity.Property(e => e.Mode)
+                      .HasColumnName("mode");
+
+                entity.Property(e => e.ReferenceId)
+                      .HasColumnName("reference_id");
+
+                entity.Property(e => e.CreatedAt)
+                      .HasColumnName("created_at");
+
+            });
 
             // Cascade rules
             builder.Entity<Room>().HasOne(r => r.Hostel).WithMany(h => h.Rooms).OnDelete(DeleteBehavior.Cascade);

@@ -11,5 +11,5 @@ public class Payment
     public int Year { get; set; }
     public string? Mode { get; set; } // cash/upi/bank
     public string? ReferenceId { get; set; }
-    public DateTimeOffset CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTimeOffset CreatedAt { get; set; } = DateTime.Now;
 }

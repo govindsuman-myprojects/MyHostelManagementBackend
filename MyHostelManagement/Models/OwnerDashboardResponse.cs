@@ -17,8 +17,12 @@ public class OwnerDashboardResponse
 
 public class StatsDto
 {
-    public int TotalRooms { get; set; }
-    public int OccupiedRooms { get; set; }
-    public int VacantRooms { get; set; }
+    public int TotalBeds { get; set; }
+    public int VacantBeds { get; set; }
+    public int OccupiedBeds { get; set; }
     public decimal PaymentsToday { get; set; }
+    public decimal PaymentsRecievedThisMonth { get; set; }
+    public decimal PaymentsPendingThisMonth { get; set; }
+    public int TotalRooms { get; set; }
+    public int VacantRooms { get; set; }
 }

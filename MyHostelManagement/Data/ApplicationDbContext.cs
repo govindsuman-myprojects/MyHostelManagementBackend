@@ -26,7 +26,6 @@ namespace MyHostelManagement.Api.Data
             base.OnModelCreating(builder);
 
             // JSON mapping
-            builder.Entity<Tenant>().Property(t => t.Extra).HasColumnType("jsonb");
             builder.Entity<AuditLog>().Property(a => a.Details).HasColumnType("jsonb");
 
             // Indexes
@@ -105,7 +104,61 @@ namespace MyHostelManagement.Api.Data
                       .HasColumnName("status");
 
             });
-            builder.Entity<Tenant>().HasIndex(t => t.Phone);
+            builder.Entity<Tenant>(entity =>
+            {
+                entity.ToTable("tenants");   // table name EXACTLY as in PostgreSQL
+
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id)
+                      .HasColumnName("id"); // column name
+
+                entity.Property(e => e.HostelId)
+                      .HasColumnName("hostel_id");
+
+                entity.Property(e => e.RoomId)
+                      .HasColumnName("room_id");
+
+                entity.Property(e => e.BedId)
+                      .HasColumnName("bed_id");
+
+                entity.Property(e => e.FullName)
+                      .HasColumnName("full_name");
+
+                entity.Property(e => e.Phone)
+                      .HasColumnName("phone");
+
+                entity.Property(e => e.GuardianName)
+                      .HasColumnName("guardian_name");
+
+                entity.Property(e => e.GuardianPhone)
+                      .HasColumnName("guardian_phone");
+
+                entity.Property(e => e.Aadhar)
+                      .HasColumnName("aadhar");
+
+                entity.Property(e => e.Address)
+                      .HasColumnName("address");
+
+                entity.Property(e => e.CheckIn)
+                      .HasColumnName("check_in");
+
+                entity.Property(e => e.CheckOut)
+                      .HasColumnName("check_out");
+
+                entity.Property(e => e.Rent)
+                      .HasColumnName("rent");
+
+                entity.Property(e => e.Advance)
+                      .HasColumnName("advance");
+
+                entity.Property(e => e.Status)
+                      .HasColumnName("status");
+
+                entity.Property(e => e.CreatedAt)
+                      .HasColumnName("created_at");
+
+            });
             builder.Entity<Payment>(entity =>
             {
                 entity.ToTable("payments");   // table name EXACTLY as in PostgreSQL

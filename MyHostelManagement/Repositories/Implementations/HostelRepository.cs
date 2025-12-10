@@ -29,24 +29,48 @@ namespace MyHostelManagement.Repositories.Implementations
             if (hostel == null)
                 return new OwnerDashboardResponse();
 
-            var totalRooms = hostel.Rooms.Count;
+            var totalBeds = hostel.Rooms.SelectMany(x => x.Beds).Count();
+            
+            var vacantBeds = hostel.Rooms
+                                 .SelectMany(r => r.Beds)
+                                 .Count(b => b.Status == "available");
 
-            var occupiedRooms = hostel.Rooms
-                .SelectMany(r => r.Beds)
-                .Count(b => b.Status == "occupied");
-
-            var vacantRooms = hostel.Rooms
-                .SelectMany(r => r.Beds)
-                .Count(b => b.Status == "available");
-
-            var today = DateTime.UtcNow.Date;
-            var tomorrow = today.AddDays(1);
-
+            var occupiedBeds = hostel.Rooms
+                                   .SelectMany(r => r.Beds)
+                                   .Count(b => b.Status == "occupied");
+            
             var toalPaymentsToday = await _dbContext.Payments
-                .Where(p => p.HostelId == id && p.CreatedAt >= today && p.CreatedAt < tomorrow)
+                .Where(p => p.HostelId == id && p.CreatedAt >= DateTime.Today.Date && p.CreatedAt < DateTime.Today.Date.AddDays(1))
+                .ToListAsync();
+            var paymentsToday = toalPaymentsToday.Sum(x => x.Amount);
+
+            var firstDayOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            var firstDayOfNextMonth = firstDayOfMonth.AddMonths(1);
+
+            var paymentsThisMonthList = await _dbContext.Payments
+                .Where(p => p.HostelId == id
+                         && p.CreatedAt >= new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).Date
+                         && p.CreatedAt < new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).Date)
                 .ToListAsync();
 
-            var paymentsToday = toalPaymentsToday.Sum(x => x.Amount);
+            var paymentsThisMonth = paymentsThisMonthList.Sum(x => x.Amount);
+
+            var activeTenants = await _dbContext.Tenants
+                .Where(t => t.HostelId == id && t.Status == "active")
+                .ToListAsync();
+
+            var expectedMonthlyRent = activeTenants.Sum(t => t.Rent);
+
+            var pendingPaymentsThisMonth = expectedMonthlyRent - paymentsThisMonth;
+
+            if (pendingPaymentsThisMonth < 0)
+                pendingPaymentsThisMonth = 0;
+
+            var totalRooms = hostel.Rooms.Count;
+
+            var vacantRooms = hostel.Rooms
+                                    .Count(room => !room.Beds.Any(bed => bed.Status == "occupied"));
+
 
             return new OwnerDashboardResponse
             {
@@ -60,10 +84,14 @@ namespace MyHostelManagement.Repositories.Implementations
                 },
                 Stats = new StatsDto
                 {
+                    TotalBeds = totalBeds,
+                    VacantBeds = vacantBeds,
+                    OccupiedBeds = occupiedBeds,
+                    PaymentsToday = paymentsToday,
+                    PaymentsRecievedThisMonth = 112000,
+                    PaymentsPendingThisMonth = 12000,
                     TotalRooms = totalRooms,
-                    OccupiedRooms = occupiedRooms,
-                    VacantRooms = vacantRooms,
-                    PaymentsToday = paymentsToday
+                    VacantRooms = vacantRooms
                 }
             };
 

@@ -20,9 +20,8 @@ public class Tenant
     public string? Address { get; set; }
     public DateTime CheckIn { get; set; }
     public DateTime? CheckOut { get; set; }
-    public decimal Rent { get; set; }
-    public decimal Advance { get; set; }
+    public decimal? Rent { get; set; }
+    public decimal? Advance { get; set; }
     public string Status { get; set; } = "active";
-    public Dictionary<string, object>? Extra { get; set; } // maps to jsonb
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using System.Collections.Generic;
 using System.Reflection.Emit;
+using MyHostelManagement.Models;
 
 namespace MyHostelManagement.Api.Data
 {
@@ -20,6 +21,7 @@ namespace MyHostelManagement.Api.Data
         public DbSet<MaintenanceRequest> MaintenanceRequests { get; set; }
         public DbSet<Attendance> Attendance { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
+        public DbSet<User> AppUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -193,6 +195,38 @@ namespace MyHostelManagement.Api.Data
                       .HasColumnName("created_at");
 
             });
+
+            builder.Entity<User>(entity =>
+            {
+                entity.ToTable("users");   // table name EXACTLY as in PostgreSQL
+
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id)
+                      .HasColumnName("id"); // column name
+
+                entity.Property(e => e.HostelId)
+                      .HasColumnName("hostel_id");
+
+                entity.Property(e => e.FullName)
+                    .HasColumnName("full_name");
+
+                entity.Property(e => e.Email)
+                    .HasColumnName("email");
+
+                entity.Property(e => e.Phone)
+                    .HasColumnName("phone");
+
+                entity.Property(e => e.PasswordHash)
+                    .HasColumnName("password_hash");
+
+                entity.Property(e => e.Role)
+                    .HasColumnName("role");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnName("created_at");
+            });
+
 
             // Cascade rules
             builder.Entity<Room>().HasOne(r => r.Hostel).WithMany(h => h.Rooms).OnDelete(DeleteBehavior.Cascade);

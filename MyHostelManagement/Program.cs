@@ -10,6 +10,8 @@ using MyHostelManagement.Api.Services.Implementations;
 using MyHostelManagement.Api.Services.Interfaces;
 using MyHostelManagement.Repositories.Implementations;
 using MyHostelManagement.Repositories.Interfaces;
+using MyHostelManagement.Services.Implementations;
+using MyHostelManagement.Services.Interfaces;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -72,7 +74,11 @@ builder.Services.AddScoped<IHostelService, HostelService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<ITenantService, TenantService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<ILoginService, LoginService>();
+
+// Repositories
 builder.Services.AddScoped<IHostelRepository, HostelRepository>();
+builder.Services.AddScoped<ILoginRepository, LoginRepository>();
 
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(Program).Assembly);

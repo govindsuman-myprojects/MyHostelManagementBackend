@@ -44,9 +44,6 @@ namespace MyHostelManagement.Repositories.Implementations
                 .ToListAsync();
             var paymentsToday = toalPaymentsToday.Sum(x => x.Amount);
 
-            var firstDayOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-            var firstDayOfNextMonth = firstDayOfMonth.AddMonths(1);
-
             var paymentsThisMonthList = await _dbContext.Payments
                 .Where(p => p.HostelId == id
                          && p.CreatedAt >= new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).Date
@@ -88,8 +85,8 @@ namespace MyHostelManagement.Repositories.Implementations
                     VacantBeds = vacantBeds,
                     OccupiedBeds = occupiedBeds,
                     PaymentsToday = paymentsToday,
-                    PaymentsRecievedThisMonth = 112000,
-                    PaymentsPendingThisMonth = 12000,
+                    PaymentsRecievedThisMonth = paymentsThisMonth,
+                    PaymentsPendingThisMonth = pendingPaymentsThisMonth ?? 0,
                     TotalRooms = totalRooms,
                     VacantRooms = vacantRooms
                 }

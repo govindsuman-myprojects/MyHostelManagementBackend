@@ -27,7 +27,7 @@ namespace MyHostelManagement.Repositories.Implementations
                 return new LoginResponseDTO
                 {
                     id = response.HostelId,
-                    message = "Success"
+                    message = null
                 };
             }
             else

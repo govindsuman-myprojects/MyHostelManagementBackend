@@ -5,6 +5,9 @@ namespace MyHostelManagement.Api.Services.Interfaces;
 
 public interface IRoomService
 {
-    Task<Room> CreateAsync(RoomDto dto);
-    Task<IEnumerable<Room>> GetByHostelAsync(Guid hostelId);
+    Task<Room> AddRoomAsync(RoomDto dto);
+    Task<IEnumerable<RoomResponseDto>> GetByHostelAsync(Guid hostelId);
+    Task<RoomResponseDto?> GetRoomAsync(Guid roomId);
+    Task<bool> UpdateRoomAsync(Guid roomId, RoomDto dto);
+    Task<bool> DeleteRoomAsync(Guid roomId);
 }

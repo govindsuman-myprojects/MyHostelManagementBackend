@@ -1,34 +1,82 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using MyHostelManagement.Api.Services.Interfaces;
+﻿using Microsoft.AspNetCore.Mvc;
 using MyHostelManagement.Api.DTOs;
+using MyHostelManagement.Api.Services.Interfaces;
+using MyHostelManagement.Models;
 
 namespace MyHostelManagement.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api")]
 public class RoomsController : ControllerBase
 {
     private readonly IRoomService _roomService;
     public RoomsController(IRoomService roomService) => _roomService = roomService;
 
-    //[HttpPost]
-    //public async Task<IActionResult> Create([FromBody] HostelDto dto)
-    //{
-    //    var created = await _hostelService.CreateAsync(dto);
-    //    return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
-    //}
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> Get(Guid id)
+    [HttpPost("rooms")]
+    public async Task<IActionResult> AddRoom(RoomDto room)
     {
-        var h = await _roomService.GetByHostelAsync(id);
-        if (h == null) return NotFound();
-        return Ok(h);
+        var response = await _roomService.AddRoomAsync(room);
+
+        return Ok(response);
     }
 
-    //[HttpGet]
-    //public async Task<IActionResult> List() => Ok(await _roomService.GetAllAsync());
+    [HttpGet("rooms/{hostelid}")]
+    public async Task<IActionResult> GetAllRooms(Guid hostelid)
+    {
+        var response = await _roomService.GetByHostelAsync(hostelid);
+        return Ok(response);
+    }
 
-    
+    [HttpGet("room/{roomId}")]
+    public async Task<IActionResult> GetRoom(Guid roomId)
+    {
+        var response = await _roomService.GetRoomAsync(roomId);
+        return Ok(response);
+    }
+
+    [HttpPut("room/{roomId}")]
+    public async Task<IActionResult> UpdateRoom(Guid roomId, RoomDto room)
+    {
+        var response = await _roomService.UpdateRoomAsync(roomId, room);
+        
+        if (!response)
+        {
+            return NotFound(new ApiResponse<int>
+            {
+                Success = false,
+                Message = "Room not found",
+                ErrorCode = "ROOM_NOT_FOUND"
+            });
+        }
+
+        return Ok(new ApiResponse<Guid>
+        {
+            Success = true,
+            Message = "Room updated successfully",
+            Data = new Guid()
+        });
+    }
+
+    [HttpDelete("room/{roomId}")]
+    public async Task<IActionResult> DeleteRoom(Guid roomId)
+    {
+        var response = await _roomService.DeleteRoomAsync(roomId);
+
+        if (!response)
+        {
+            return NotFound(new ApiResponse<int>
+            {
+                Success = false,
+                Message = "Room not found or Please delete all the teanats attched to the beds",
+                ErrorCode = "ROOM_NOT_FOUND"
+            });
+        }
+
+        return Ok(new ApiResponse<Guid>
+        {
+            Success = true,
+            Message = "Room deleted successfully",
+            Data = roomId
+        });
+    }
 }

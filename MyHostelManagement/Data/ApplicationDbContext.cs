@@ -83,6 +83,9 @@ namespace MyHostelManagement.Api.Data
                 entity.Property(e => e.Rent)
                       .HasColumnName("rent");
 
+                entity.Property(e => e.RoomFloor)
+                      .HasColumnName("room_floor");
+
             });
             builder.Entity<Bed>(entity =>
             {

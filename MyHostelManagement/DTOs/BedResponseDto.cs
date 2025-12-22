@@ -1,7 +1,8 @@
 ﻿namespace MyHostelManagement.Api.DTOs
 {
-    public class BedDto
+    public class BedResponseDto
     {
+        public Guid Id { get; set; }
         public Guid RoomId { get; set; }
         public Guid HostelId { get; set; }
         public string BedNumber { get; set; } = string.Empty;

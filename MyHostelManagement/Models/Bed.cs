@@ -7,5 +7,5 @@ public class Bed
     public Room? Room { get; set; }
     public Guid HostelId { get; set; }
     public string? BedNumber { get; set; }
-    public string Status { get; set; } = "available"; // available/occupied/reserved
+    public string Status { get; set; } = "available"; // available/occupied
 }

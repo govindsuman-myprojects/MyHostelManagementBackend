@@ -3,6 +3,7 @@ using MyHostelManagement.Api.Data;
 using MyHostelManagement.Api.DTOs;
 using MyHostelManagement.Api.Models;
 using MyHostelManagement.DTOs;
+using MyHostelManagement.Models;
 using MyHostelManagement.Repositories.Interfaces;
 
 namespace MyHostelManagement.Repositories.Implementations
@@ -16,50 +17,35 @@ namespace MyHostelManagement.Repositories.Implementations
             _dbContext = dbContext;
         }
 
-        public virtual async Task<LoginResponseDTO> LoginAsync(LoginDto dto)
+        public virtual async Task<User?> UserExistsOrNot(string emailOrPhone)
         {
-            if (dto.UserRoleDate == "Tenant")
-            {
-                var tenantResponse = await _dbContext.Tenants
-                                      .Where(x => x.Phone == dto.Email).FirstOrDefaultAsync();
-
-                if (tenantResponse != null)
-                {
-                    return new LoginResponseDTO
-                    {
-                        id = tenantResponse.Id,
-                        message = null
-                    };
-                }
-                else
-                {
-                    return new LoginResponseDTO
-                    {
-                        id = new Guid(),
-                        message = "User Not Found"
-                    };
-                }
-            }
-
             var response = await _dbContext.AppUsers
-                                .Where((x => x.Email == dto.Email || x.Phone == dto.Email  && x.PasswordHash == dto.Password)).FirstOrDefaultAsync();
+                                            .Where(x => x.Email == emailOrPhone || x.Phone == emailOrPhone).FirstOrDefaultAsync();
+            return response;
 
-            if (response != null)
+        }
+
+        public virtual async Task<User?> GetUserId(string emailOrPhone, string password)
+        {
+            var response = await _dbContext.AppUsers
+                                .Where(x => (x.Email == emailOrPhone || x.Phone == emailOrPhone) && x.PasswordHash == password).FirstOrDefaultAsync();
+
+            return response;
+        }
+
+        public virtual async Task<bool> UpdateUserAsync(User user)
+        {
+            try
             {
-                return new LoginResponseDTO
-                {
-                    id = response.HostelId,
-                    message = null
-                };
+                _dbContext.AppUsers.Update(user);
+                await _dbContext.SaveChangesAsync();
+                return true;
             }
-            else
+            catch (Exception)
             {
-                return new LoginResponseDTO
-                {
-                    id = new Guid(),
-                    message = "User Not Found"
-                };
+                return false;
             }
+            
         }
     }
 }

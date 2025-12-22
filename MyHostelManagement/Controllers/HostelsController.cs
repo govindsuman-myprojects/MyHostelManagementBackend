@@ -36,4 +36,11 @@ public class HostelsController : ControllerBase
         var response = await _hostelService.GetOwnerDashboardAsync(id);
         return Ok(response);
     }
+
+    [HttpGet("tenant-dashboard/{id}")]
+    public async Task<IActionResult> GetTenantDashboard(Guid id)
+    {
+        var response = await _hostelService.GetOwnerDashboardAsync(id);
+        return Ok(response);
+    }
 }

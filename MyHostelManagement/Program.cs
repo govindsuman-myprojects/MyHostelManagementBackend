@@ -75,10 +75,13 @@ builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<ITenantService, TenantService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
+builder.Services.AddScoped<IBedService, BedService>();
 
 // Repositories
 builder.Services.AddScoped<IHostelRepository, HostelRepository>();
 builder.Services.AddScoped<ILoginRepository, LoginRepository>();
+builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+builder.Services.AddScoped<IBedRepository, BedRepository>();
 
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(Program).Assembly);

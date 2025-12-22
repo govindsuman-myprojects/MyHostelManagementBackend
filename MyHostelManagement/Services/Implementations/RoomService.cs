@@ -3,31 +3,41 @@ using MyHostelManagement.Api.DTOs;
 using MyHostelManagement.Api.Models;
 using MyHostelManagement.Api.Repositories.Interfaces;
 using MyHostelManagement.Api.Services.Interfaces;
+using MyHostelManagement.Repositories.Interfaces;
 
 namespace MyHostelManagement.Api.Services.Implementations;
 
 public class RoomService : IRoomService
 {
-    private readonly IUnitOfWork _uow;
-    private readonly IMapper _mapper;
+    private readonly IRoomRepository _roomRepo;
 
-    public RoomService(IUnitOfWork uow, IMapper mapper)
+    public RoomService(IRoomRepository roomRepo)
     {
-        _uow = uow;
-        _mapper = mapper;
+        _roomRepo = roomRepo;
     }
 
-    public async Task<Room> CreateAsync(RoomDto dto)
+    public async Task<Room> AddRoomAsync(RoomDto dto)
     {
-        var room = _mapper.Map<Room>(dto);
-        await _uow.Rooms.AddAsync(room);
-        await _uow.SaveChangesAsync();
-        return room;
+        return await _roomRepo.AddRoomAsync(dto);
     }
 
-    public async Task<IEnumerable<Room>> GetByHostelAsync(Guid hostelId)
+    public async Task<IEnumerable<RoomResponseDto>> GetByHostelAsync(Guid hostelId)
     {
-        var rooms = await _uow.Rooms.FindAsync(r => ((Room)r).HostelId == hostelId);
-        return rooms;
+        return await _roomRepo.GetAllRoomAsync(hostelId);
+    }
+
+    public async Task<RoomResponseDto?> GetRoomAsync(Guid roomId)
+    {
+        return await _roomRepo.GetRoomAsync(roomId);
+    }
+
+    public async Task<bool> UpdateRoomAsync(Guid roomId, RoomDto dto)
+    {
+        return await _roomRepo.UpdateRoomAsync(roomId, dto);
+    }
+
+    public async Task<bool> DeleteRoomAsync(Guid roomId)
+    {
+        return await _roomRepo.DeleteRoomAsync(roomId);
     }
 }

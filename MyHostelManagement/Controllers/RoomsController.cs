@@ -27,6 +27,13 @@ public class RoomsController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("roomsbyfloor/{hostelid}")]
+    public async Task<IActionResult> GetAllRoomsForUI(Guid hostelid)
+    {
+        var response = await _roomService.GetAllRoomsByFloorAsync(hostelid);
+        return Ok(response);
+    }
+
     [HttpGet("room/{roomId}")]
     public async Task<IActionResult> GetRoom(Guid roomId)
     {

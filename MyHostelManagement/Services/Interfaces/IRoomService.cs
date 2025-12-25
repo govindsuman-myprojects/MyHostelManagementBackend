@@ -1,5 +1,6 @@
 ﻿using MyHostelManagement.Api.DTOs;
 using MyHostelManagement.Api.Models;
+using MyHostelManagement.DTOs;
 
 namespace MyHostelManagement.Api.Services.Interfaces;
 
@@ -10,4 +11,5 @@ public interface IRoomService
     Task<RoomResponseDto?> GetRoomAsync(Guid roomId);
     Task<bool> UpdateRoomAsync(Guid roomId, RoomDto dto);
     Task<bool> DeleteRoomAsync(Guid roomId);
+    Task<IEnumerable<RoomResponseUIDto>> GetAllRoomsByFloorAsync(Guid hostelId);
 }

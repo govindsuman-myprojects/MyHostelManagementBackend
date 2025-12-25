@@ -5,13 +5,10 @@ public class Tenant
     public Guid Id { get; set; } = Guid.NewGuid();
     public Guid HostelId { get; set; }
     public Hostel? Hostel { get; set; }
-
     public Guid? RoomId { get; set; }
     public Room? Room { get; set; }
-
     public Guid? BedId { get; set; }
     public Bed? Bed { get; set; }
-
     public string FullName { get; set; } = null!;
     public string Phone { get; set; } = null!;
     public string? GuardianName { get; set; }

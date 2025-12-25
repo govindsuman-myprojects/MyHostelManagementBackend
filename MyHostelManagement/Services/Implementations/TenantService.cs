@@ -17,11 +17,9 @@ public class TenantService : ITenantService
         _mapper = mapper;
     }
 
-    public async Task<Tenant> CreateAsync(TenantDto dto)
+    public async Task<Tenant> AddTenantAsync(TenantDto dto)
     {
         var tenant = _mapper.Map<Tenant>(dto);
-
-        // assign bed / update bed status
         
         var bed = await _uow.Beds.GetAsync(dto.BedId);
         if (bed == null) throw new Exception("Bed not found");

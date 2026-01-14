@@ -1,9 +1,8 @@
-﻿namespace MyHostelManagement.Api.DTOs
+﻿namespace MyHostelManagement.DTOs
 {
     public class LoginDto
     {
-        public string EmailOrPhoneNumber { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-        public string UserRoleData { get; set; } = string.Empty;
+        public long PhoneNumber { get; set; }
+        public string Password { get; set; }
     }
 }

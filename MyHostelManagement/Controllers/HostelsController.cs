@@ -6,41 +6,78 @@ using MyHostelManagement.Api.DTOs;
 namespace MyHostelManagement.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class HostelsController : ControllerBase
+[Route("api/hostels")]
+public class HostelController : ControllerBase
 {
     private readonly IHostelService _hostelService;
-    public HostelsController(IHostelService hostelService) => _hostelService = hostelService;
 
+    public HostelController(IHostelService hostelService)
+    {
+        _hostelService = hostelService;
+    }
+
+    // ------------------------------------
+    // CREATE HOSTEL
+    // POST /api/hostels
+    // ------------------------------------
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] HostelDto dto)
+    public async Task<IActionResult> Create(CreateHostelDto dto)
     {
-        var created = await _hostelService.CreateAsync(dto);
-        return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
+        var result = await _hostelService.CreateAsync(dto);
+        return Ok(result);
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> Get(Guid id)
-    {
-        var h = await _hostelService.GetByIdAsync(id);
-        if (h == null) return NotFound();
-        return Ok(h);
-    }
-
+    // ------------------------------------
+    // GET ALL HOSTELS
+    // GET /api/hostels
+    // ------------------------------------
     [HttpGet]
-    public async Task<IActionResult> List() => Ok(await _hostelService.GetAllAsync());
-
-    [HttpGet("owner-dashboard/{id}")]
-    public async Task<IActionResult> GetOwnerDashboard(Guid id)
+    public async Task<IActionResult> GetAll()
     {
-        var response = await _hostelService.GetOwnerDashboardAsync(id);
-        return Ok(response);
+        var result = await _hostelService.GetAllAsync();
+        return Ok(result);
     }
 
-    [HttpGet("tenant-dashboard/{id}")]
-    public async Task<IActionResult> GetTenantDashboard(Guid id)
+    // ------------------------------------
+    // GET HOSTEL BY ID
+    // GET /api/hostels/{id}
+    // ------------------------------------
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(Guid id)
     {
-        var response = await _hostelService.GetOwnerDashboardAsync(id);
-        return Ok(response);
+        var hostel = await _hostelService.GetByIdAsync(id);
+        if (hostel == null)
+            return NotFound("Hostel not found");
+
+        return Ok(hostel);
+    }
+
+    // ------------------------------------
+    // UPDATE HOSTEL
+    // PUT /api/hostels/{id}
+    // ------------------------------------
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(Guid id, CreateHostelDto dto)
+    {
+        var updated = await _hostelService.UpdateAsync(id, dto);
+        if (!updated)
+            return NotFound("Hostel not found");
+
+        return Ok("Hostel updated successfully");
+    }
+
+    // ------------------------------------
+    // DELETE HOSTEL
+    // DELETE /api/hostels/{id}
+    // ------------------------------------
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var deleted = await _hostelService.DeleteAsync(id);
+        if (!deleted)
+            return NotFound("Hostel not found");
+
+        return Ok("Hostel deleted successfully");
     }
 }
+

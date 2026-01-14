@@ -1,30 +1,59 @@
-﻿using AutoMapper;
-using MyHostelManagement.Api.Services.Interfaces;
+﻿using MyHostelManagement.Api.DTOs;
 using MyHostelManagement.Api.Models;
-using MyHostelManagement.Api.Repositories.Interfaces;
-using MyHostelManagement.Api.DTOs;
+using MyHostelManagement.DTOs;
+using MyHostelManagement.Repositories.Implementations;
+using MyHostelManagement.Repositories.Interfaces;
+using MyHostelManagement.Services.Interfaces;
 
-namespace MyHostelManagement.Api.Services.Implementations;
-
-public class PaymentService : IPaymentService
+namespace MyHostelManagement.Services.Implementations
 {
-    private readonly IUnitOfWork _uow;
-    private readonly IMapper _mapper;
-
-    public PaymentService(IUnitOfWork uow, IMapper mapper)
+    public class PaymentService : IPaymentService
     {
-        _uow = uow;
-        _mapper = mapper;
-    }
+        private readonly IPaymentRepository _paymentRepo;
 
-    public async Task<Payment> CreateAsync(PaymentDto dto)
-    {
-        var payment = _mapper.Map<Payment>(dto);
-        await _uow.Payments.AddAsync(payment);
-        await _uow.SaveChangesAsync();
-        return payment;
-    }
+        public PaymentService(IPaymentRepository paymentRepo)
+        {
+            _paymentRepo = paymentRepo;
+        }
 
-    public async Task<IEnumerable<Payment>> GetByTenantAsync(Guid tenantId) =>
-        await _uow.Payments.FindAsync(p => ((Payment)p).TenantId == tenantId);
+        public async Task<PaymentResponseDto> CreateAsync(CreatePaymentDto dto)
+        {
+            var exists = await _paymentRepo.ExistsAsync(
+                dto.UserId, dto.PaymentMonth, dto.PaymentYear);
+
+            if (exists)
+                throw new Exception("Payment already exists for this month");
+
+            var payment = new Payment
+            {
+                HostelId = dto.HostelId,
+                UserId = dto.UserId,
+                Amount = dto.Amount,
+                PaymentMonth = dto.PaymentMonth,
+                PaymentYear = dto.PaymentYear
+            };
+
+            await _paymentRepo.CreateAsync(payment);
+            return Map(payment);
+        }
+
+        public async Task<List<PaymentResponseDto>> GetAsync(PaymentFilterDto filter)
+        {
+            var payments = await _paymentRepo.GetByFilterAsync(filter);
+            return payments.Select(Map).ToList();
+        }
+
+        private static PaymentResponseDto Map(Payment payment)
+        {
+            return new PaymentResponseDto
+            {
+                Id = payment.Id,
+                UserId = payment.UserId,
+                Amount = payment.Amount,
+                PaymentMonth = payment.PaymentMonth,
+                PaymentYear = payment.PaymentYear,
+                CreatedAt = payment.CreatedAt
+            };
+        }
+    }
 }

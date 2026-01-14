@@ -1,14 +1,20 @@
-﻿namespace MyHostelManagement.Api.Models;
+﻿using MyHostelManagement.Models;
+using MyHostelManagement.Models.Common;
 
-public class Room
+namespace MyHostelManagement.Api.Models;
+
+public class Room : BaseEntity
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; set; }
+
     public Guid HostelId { get; set; }
     public Hostel? Hostel { get; set; }
-    public string RoomNumber { get; set; } = null!;
-    public int Capacity { get; set; }
-    public decimal? Rent { get; set; }
-    public string? Type { get; set; }
-    public char RoomFloor { get; set; } 
-    public ICollection<Bed> Beds { get; set; } = new List<Bed>();
+
+    public string? RoomNumber { get; set; }
+    public int TotalBeds { get; set; }
+    public int OccupiedBeds { get; set; }
+    public decimal Rent { get; set; }
+    public int Type { get; set; }
+
+    public ICollection<Complaint> Complaints { get; set; }
 }

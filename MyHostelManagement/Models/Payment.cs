@@ -1,15 +1,20 @@
-﻿namespace MyHostelManagement.Api.Models;
+﻿using MyHostelManagement.Models;
+using MyHostelManagement.Models.Common;
 
-public class Payment
+namespace MyHostelManagement.Api.Models;
+
+public class Payment : BaseEntity
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
-    public Guid TenantId { get; set; }
-    public Tenant? Tenant { get; set; }
+    public Guid Id { get; set; }
+
+    public Guid UserId { get; set; }
+    public User? User { get; set; }
+
     public Guid HostelId { get; set; }
+    public Hostel? Hostel { get; set; }
+
     public decimal Amount { get; set; }
-    public int Month { get; set; }
-    public int Year { get; set; }
-    public string? Mode { get; set; } // cash/upi/bank
-    public string? ReferenceId { get; set; }
-    public DateTimeOffset CreatedAt { get; set; } = DateTime.Now;
+    public int PaymentMonth { get; set; }
+    public int PaymentYear { get; set; }
 }
+

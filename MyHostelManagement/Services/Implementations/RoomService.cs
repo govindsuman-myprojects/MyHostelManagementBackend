@@ -1,12 +1,10 @@
-﻿using AutoMapper;
-using MyHostelManagement.Api.DTOs;
+﻿using MyHostelManagement.Api.DTOs;
 using MyHostelManagement.Api.Models;
-using MyHostelManagement.Api.Repositories.Interfaces;
-using MyHostelManagement.Api.Services.Interfaces;
 using MyHostelManagement.DTOs;
 using MyHostelManagement.Repositories.Interfaces;
+using MyHostelManagement.Services.Interfaces;
 
-namespace MyHostelManagement.Api.Services.Implementations;
+namespace MyHostelManagement.Services.Implementations;
 
 public class RoomService : IRoomService
 {
@@ -17,57 +15,67 @@ public class RoomService : IRoomService
         _roomRepo = roomRepo;
     }
 
-    public async Task<Room> AddRoomAsync(RoomDto dto)
+    public async Task<RoomResponseDto> CreateAsync(CreateRoomDto dto)
     {
-        return await _roomRepo.AddRoomAsync(dto);
+        var room = new Room
+        {
+            HostelId = dto.HostelId,
+            RoomNumber = dto.RoomNumber,
+            TotalBeds = dto.TotalBeds,
+            OccupiedBeds = 0,
+            Rent = dto.Rent,
+            Type = dto.Type
+        };
+
+        await _roomRepo.CreateAsync(room);
+        return Map(room);
     }
 
-    public async Task<IEnumerable<RoomResponseDto>> GetByHostelAsync(Guid hostelId)
+    public async Task<RoomResponseDto?> GetByIdAsync(Guid id)
     {
-        return await _roomRepo.GetAllRoomAsync(hostelId);
+        var room = await _roomRepo.GetByIdAsync(id);
+        return room == null ? null : Map(room);
     }
 
-    public async Task<IEnumerable<RoomResponseUIDto>> GetAllRoomsByFloorAsync(Guid hostelId)
+    public async Task<List<RoomResponseDto>> GetByHostelAsync(Guid hostelId)
     {
-        var response = await _roomRepo.GetAllRoomAsync(hostelId);
-        return GetRoomsGroupedByFloor(response);
+        var rooms = await _roomRepo.GetByHostelAsync(hostelId);
+        return rooms.Select(Map).ToList();
     }
 
-    public async Task<RoomResponseDto?> GetRoomAsync(Guid roomId)
+    public async Task<bool> UpdateAsync(Guid id, UpdateRoomDto dto)
     {
-        return await _roomRepo.GetRoomAsync(roomId);
+        var room = await _roomRepo.GetByIdAsync(id);
+        if (room == null) return false;
+
+        room.RoomNumber = dto.RoomNumber;
+        room.TotalBeds = dto.TotalBeds;
+        room.Rent = dto.Rent;
+        room.Type = dto.Type;
+
+        await _roomRepo.UpdateAsync(room);
+        return true;
     }
 
-    public async Task<bool> UpdateRoomAsync(Guid roomId, RoomDto dto)
+    public async Task<bool> DeleteAsync(Guid id)
     {
-        return await _roomRepo.UpdateRoomAsync(roomId, dto);
+        var room = await _roomRepo.GetByIdAsync(id);
+        if (room == null) return false;
+
+        await _roomRepo.DeleteAsync(room);
+        return true;
     }
 
-    public async Task<bool> DeleteRoomAsync(Guid roomId)
+    private static RoomResponseDto Map(Room room)
     {
-        return await _roomRepo.DeleteRoomAsync(roomId);
-    }
-
-    public IEnumerable<RoomResponseUIDto> GetRoomsGroupedByFloor(
-        IEnumerable<RoomResponseDto> rooms)
-    {
-        return rooms
-            .GroupBy(r => r.RoomFloor)
-            .OrderBy(g => g.Key)
-            .Select(floorGroup => new RoomResponseUIDto
-            {
-                Floor = floorGroup.Key,
-                Rooms = floorGroup.Select(room => new RoomSummaryDto
-                {
-                    RoomId = room.Id,
-                    RoomNumber = room.RoomNumber,
-                    Capacity = room.Capacity,
-                    Type = room.Type,
-                    Rent = room.Rent,
-                    OccupiedBeds = room.Beds.Count(b => b.Status == "occupied"),
-                    VacantBeds = room.Capacity - room.Beds.Count(b => b.Status == "occupied")
-                }).ToList()
-            })
-            .ToList();
+        return new RoomResponseDto
+        {
+            Id = room.Id,
+            RoomNumber = room.RoomNumber ?? string.Empty,
+            TotalBeds = room.TotalBeds,
+            OccupiedBeds = room.OccupiedBeds,
+            Rent = room.Rent,
+            Type = room.Type
+        };
     }
 }

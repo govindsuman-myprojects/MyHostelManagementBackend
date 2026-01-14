@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyHostelManagement.Api.Data;
-using MyHostelManagement.Api.DTOs;
 using MyHostelManagement.Api.Models;
 using MyHostelManagement.Repositories.Interfaces;
 
@@ -11,78 +9,46 @@ namespace MyHostelManagement.Repositories.Implementations
     public class RoomRepository : IRoomRepository
     {
         private readonly IMapper _mapper;
-        private readonly ApplicationDbContext _dbContext;
+        private readonly ApplicationDbContext _context;
 
         public RoomRepository(IMapper mapper, ApplicationDbContext dbContext)
         {
             _mapper = mapper;
-            _dbContext = dbContext;
+            _context = dbContext;
         }
 
-        public virtual async Task<Room> AddRoomAsync(RoomDto dto)
+        public async Task<Room> CreateAsync(Room room)
         {
-            var room = _mapper.Map<Room>(dto);
-            await _dbContext.Rooms.AddAsync(room);
-            await _dbContext.SaveChangesAsync();
+            _context.Rooms.Add(room);
+            await _context.SaveChangesAsync();
             return room;
         }
 
-        public virtual async Task<IEnumerable<RoomResponseDto>> GetAllRoomAsync(Guid hostelId)
+        public async Task<Room?> GetByIdAsync(Guid id)
         {
-            var rooms = await _dbContext.Rooms
-                                .Include(x => x.Beds)
-                                .Where(x => x.HostelId == hostelId).ToListAsync();
-
-            var roomsResponseDto = _mapper.Map<List<RoomResponseDto>>(rooms);
-            return roomsResponseDto;
+            return await _context.Rooms
+                .FirstOrDefaultAsync(r => r.Id == id);
         }
 
-        public virtual async Task<RoomResponseDto?> GetRoomAsync(Guid roomId)
+        public async Task<List<Room>> GetByHostelAsync(Guid hostelId)
         {
-            var response = await _dbContext.Rooms
-                                .Include(x => x.Beds)
-                                .Where(x => x.Id == roomId).FirstOrDefaultAsync();
-
-            var roomResponseDto = _mapper.Map<RoomResponseDto>(response);
-            return roomResponseDto;
+            return await _context.Rooms
+                .Where(r => r.HostelId == hostelId)
+                .OrderBy(r => r.RoomNumber)
+                .ToListAsync();
         }
 
-        public virtual async Task<bool> UpdateRoomAsync(Guid roomId, RoomDto dto)
+        public async Task UpdateAsync(Room room)
         {
-            var room = await _dbContext.Rooms
-                                .Include(x => x.Beds)
-                                .Where(x => x.Id == roomId).FirstOrDefaultAsync();
-            if (room == null)
-                return false;
-
-            room.Id = roomId;
-            room.RoomNumber = dto.RoomNumber;
-            room.Capacity = dto.Capacity;
-            room.Type = dto.Type;
-            room.Rent = dto.Rent;
-            room.RoomFloor = dto.RoomFloor;
-            await _dbContext.SaveChangesAsync();
-            return true;
+            room.UpdatedAt = DateTime.UtcNow;
+            _context.Rooms.Update(room);
+            await _context.SaveChangesAsync();
         }
 
-        public virtual async Task<bool> DeleteRoomAsync(Guid roomId)
+        public async Task DeleteAsync(Room room)
         {
-            var deleteRoom = await _dbContext.Rooms
-                                .Include(x => x.Beds)
-                                .Where(x => x.Id == roomId).FirstOrDefaultAsync();
-
-            if (deleteRoom == null)
-                return false;
-
-            else if (deleteRoom.Beds.Any(x => x.Status == "occupied"))
-                return false;
-            
-            else
-            {
-                _dbContext.Rooms.Remove(deleteRoom);
-                await _dbContext.SaveChangesAsync();
-                return true;
-            }
+            _context.Rooms.Remove(room);
+            await _context.SaveChangesAsync();
         }
     }
 }

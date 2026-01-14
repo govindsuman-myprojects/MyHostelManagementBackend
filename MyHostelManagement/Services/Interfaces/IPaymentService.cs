@@ -1,10 +1,12 @@
 ﻿using MyHostelManagement.Api.DTOs;
-using MyHostelManagement.Api.Models;
+using MyHostelManagement.DTOs;
 
-namespace MyHostelManagement.Api.Services.Interfaces;
-
-public interface IPaymentService
+namespace MyHostelManagement.Services.Interfaces
 {
-    Task<Payment> CreateAsync(PaymentDto dto);
-    Task<IEnumerable<Payment>> GetByTenantAsync(Guid tenantId);
+    public interface IPaymentService
+    {
+        Task<PaymentResponseDto> CreateAsync(CreatePaymentDto dto);
+        Task<List<PaymentResponseDto>> GetAsync(PaymentFilterDto filter);
+    }
+
 }

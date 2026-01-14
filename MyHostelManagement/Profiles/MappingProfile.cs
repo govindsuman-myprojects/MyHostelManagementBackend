@@ -9,13 +9,8 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<HostelDto, Hostel>().ForMember(dest => dest.Id, opt => opt.Ignore());
-        CreateMap<RoomDto, Room>();
-        CreateMap<TenantDto, Tenant>();
-        CreateMap<PaymentDto, Payment>();
-        CreateMap<BedDto, Bed>();
+        CreateMap<PaymentFilterDto, Payment>();
         CreateMap<Room, RoomResponseDto>();
-        CreateMap<Bed, BedResponseDto>();
         // other maps as needed
     }
 }

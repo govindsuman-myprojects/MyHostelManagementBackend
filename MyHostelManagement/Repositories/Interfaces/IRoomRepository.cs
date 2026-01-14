@@ -5,10 +5,10 @@ namespace MyHostelManagement.Repositories.Interfaces
 {
     public interface IRoomRepository
     {
-        Task<Room> AddRoomAsync(RoomDto dto);
-        Task<IEnumerable<RoomResponseDto>> GetAllRoomAsync(Guid hostelId);
-        Task<RoomResponseDto?> GetRoomAsync(Guid roomId);
-        Task<bool> UpdateRoomAsync(Guid roomId, RoomDto dto);
-        Task<bool> DeleteRoomAsync(Guid roomId);
+        Task<Room> CreateAsync(Room room);
+        Task<Room?> GetByIdAsync(Guid id);
+        Task<List<Room>> GetByHostelAsync(Guid hostelId);
+        Task UpdateAsync(Room room);
+        Task DeleteAsync(Room room);
     }
 }

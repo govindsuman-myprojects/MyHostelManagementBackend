@@ -1,6 +1,8 @@
-﻿namespace MyHostelManagement.Api.Models;
+﻿using MyHostelManagement.Models.Common;
 
-public class MaintenanceRequest
+namespace MyHostelManagement.Api.Models;
+
+public class MaintenanceRequest : BaseEntity
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public Guid HostelId { get; set; }
@@ -9,5 +11,4 @@ public class MaintenanceRequest
     public string? Title { get; set; }
     public string? Description { get; set; }
     public string Status { get; set; } = "pending";
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

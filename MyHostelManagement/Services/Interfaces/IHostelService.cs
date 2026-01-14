@@ -1,12 +1,14 @@
 ﻿using MyHostelManagement.Api.DTOs;
 using MyHostelManagement.Api.Models;
+using MyHostelManagement.DTOs;
 
 namespace MyHostelManagement.Api.Services.Interfaces;
 
 public interface IHostelService
 {
-    Task<Hostel> CreateAsync(HostelDto dto);
-    Task<Hostel?> GetByIdAsync(Guid id);
-    Task<IEnumerable<Hostel>> GetAllAsync();
-    Task<OwnerDashboardResponse> GetOwnerDashboardAsync(Guid id);
+    Task<HostelResponseDto> CreateAsync(CreateHostelDto dto);
+    Task<List<HostelResponseDto>> GetAllAsync();
+    Task<HostelResponseDto?> GetByIdAsync(Guid id);
+    Task<bool> UpdateAsync(Guid id, CreateHostelDto dto);
+    Task<bool> DeleteAsync(Guid id);
 }

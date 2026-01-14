@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyHostelManagement.Api.DTOs;
-using MyHostelManagement.Api.Models;
 using MyHostelManagement.Api.Services.Interfaces;
 using MyHostelManagement.DTOs;
 using MyHostelManagement.Services.Interfaces;

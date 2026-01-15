@@ -70,7 +70,7 @@ namespace MyHostelManagement.Repositories.Implementations
             return response;
         }
 
-        public async Task<User?> GetByPhoneAsync(long phoneNumber)
+        public async Task<User?> GetByPhoneAsync(string phoneNumber)
         {
             return await _context.Users
                 .Include(u => u.Role)

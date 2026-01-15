@@ -12,7 +12,7 @@ namespace MyHostelManagement.Repositories.Interfaces
         Task UpdateAsync(User user);
         Task DeleteAsync(User user);
         Task<Role?> GetUserRole(Guid roleId);
-        Task<User?> GetByPhoneAsync(long phoneNumber);
+        Task<User?> GetByPhoneAsync(string phoneNumber);
         Task<Guid> GetHostelIdUsingUserId(Guid userId);
     }
 

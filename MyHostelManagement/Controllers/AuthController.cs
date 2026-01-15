@@ -18,7 +18,7 @@ namespace MyHostelManagement.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDto dto)
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
             return Ok(await _service.LoginAsync(dto));
         }

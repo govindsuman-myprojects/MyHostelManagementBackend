@@ -298,6 +298,7 @@ namespace MyHostelManagement.Api.Data
 
                 entity.Property(e => e.Id).HasColumnName("id");
                 entity.Property(e => e.TypeId).HasColumnName("type_id");
+                entity.Property(e => e.HostelId).HasColumnName("hostel_id");
                 entity.Property(e => e.Subject).HasColumnName("subject");
                 entity.Property(e => e.Message).HasColumnName("message");
                 entity.Property(e => e.StartDate).HasColumnName("start_date");

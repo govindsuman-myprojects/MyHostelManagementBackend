@@ -47,7 +47,8 @@ namespace MyHostelManagement.Services.Implementations
             {
                 AccessToken = token,
                 Role = role.RoleName,
-                UserId = user.Id
+                UserId = user.Id,
+                HostelId = user.HostelId
             };
         }
     }

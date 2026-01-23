@@ -37,9 +37,9 @@ public class RoomService : IRoomService
         return room == null ? null : Map(room);
     }
 
-    public async Task<List<RoomResponseDto>> GetByHostelAsync(Guid hostelId)
+    public async Task<List<RoomResponseDto>> GetByHostelAsync(Guid hostelId, string status)
     {
-        var rooms = await _roomRepo.GetByHostelAsync(hostelId);
+        var rooms = await _roomRepo.GetByHostelAsync(hostelId, status);
         return rooms.Select(Map).ToList();
     }
 

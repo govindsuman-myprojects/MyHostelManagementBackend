@@ -30,13 +30,31 @@ namespace MyHostelManagement.Repositories.Implementations
                 .FirstOrDefaultAsync(r => r.Id == id);
         }
 
-        public async Task<List<Room>> GetByHostelAsync(Guid hostelId)
+        public async Task<List<Room>> GetByHostelAsync(Guid hostelId, string status)
         {
-            return await _context.Rooms
-                .Where(r => r.HostelId == hostelId)
-                .OrderBy(r => r.RoomNumber)
-                .ToListAsync();
+            if (status.ToLower() == "vacant")
+            {
+                return await _context.Rooms
+                    .Where(r => r.HostelId == hostelId && r.OccupiedBeds < r.TotalBeds)
+                    .OrderBy(r => r.RoomNumber)
+                    .ToListAsync();
+            }
+            else if (status.ToLower() == "occupied")
+            {
+                return await _context.Rooms
+                    .Where(r => r.HostelId == hostelId && r.OccupiedBeds > 0)
+                    .OrderBy(r => r.RoomNumber)
+                    .ToListAsync();
+            }
+            else
+            {
+                return await _context.Rooms
+                    .Where(r => r.HostelId == hostelId)
+                    .OrderBy(r => r.RoomNumber)
+                    .ToListAsync();
+            }
         }
+
 
         public async Task UpdateAsync(Room room)
         {

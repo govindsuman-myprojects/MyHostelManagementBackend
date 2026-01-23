@@ -35,7 +35,7 @@ namespace MyHostelManagement.Services.Implementations
             var now = DateTime.UtcNow;
 
             var hostel = await _hostelService.GetByIdAsync(hostelId);
-            var rooms = await _roomService.GetByHostelAsync(hostelId);
+            var rooms = await _roomService.GetByHostelAsync(hostelId, "All");
             var totalBeds = rooms.Sum(r => r.TotalBeds);
             var occupiedBeds = rooms.Sum(x => x.OccupiedBeds);
 

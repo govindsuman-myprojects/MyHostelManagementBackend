@@ -7,7 +7,7 @@ namespace MyHostelManagement.Repositories.Interfaces
     {
         Task<Room> CreateAsync(Room room);
         Task<Room?> GetByIdAsync(Guid id);
-        Task<List<Room>> GetByHostelAsync(Guid hostelId);
+        Task<List<Room>> GetByHostelAsync(Guid hostelId, string status);
         Task UpdateAsync(Room room);
         Task DeleteAsync(Room room);
     }

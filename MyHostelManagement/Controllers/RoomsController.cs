@@ -31,10 +31,10 @@ public class RoomsController : ControllerBase
     }
 
     // GET ROOMS BY HOSTEL
-    [HttpGet("hostel/{hostelId}")]
-    public async Task<IActionResult> GetByHostel(Guid hostelId)
+    [HttpGet("hostel/{hostelId}/{status}")]
+    public async Task<IActionResult> GetByHostel(Guid hostelId, string status)
     {
-        return Ok(await _roomService.GetByHostelAsync(hostelId));
+        return Ok(await _roomService.GetByHostelAsync(hostelId, status));
     }
 
     // UPDATE ROOM

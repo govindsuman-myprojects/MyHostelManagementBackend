@@ -36,5 +36,12 @@ public class PaymentController : ControllerBase
     {
         return Ok(await _paymentService.GetAsync(filter));
     }
+
+    // GET PAYMENTS (FILTER)
+    [HttpPost("{hostelId}")]
+    public async Task<IActionResult> GetByHostelId(Guid hostelId)
+    {
+        return Ok(await _paymentService.GetByHostelId(hostelId));
+    }
 }
 

@@ -7,6 +7,8 @@ namespace MyHostelManagement.Services.Interfaces
     {
         Task<PaymentResponseDto> CreateAsync(CreatePaymentDto dto);
         Task<List<PaymentResponseDto>> GetAsync(PaymentFilterDto filter);
+        Task<List<PaymentResponseDto>> GetByHostelId(Guid hostelId);
+
     }
 
 }

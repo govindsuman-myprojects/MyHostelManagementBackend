@@ -39,6 +39,7 @@ namespace MyHostelManagement.Repositories.Implementations
                 query = query.Where(p => p.PaymentYear == filter.Year);
 
             return await query
+                .Include(x => x.User)
                 .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();
         }
@@ -49,6 +50,13 @@ namespace MyHostelManagement.Repositories.Implementations
                 p.UserId == userId &&
                 p.PaymentMonth == month &&
                 p.PaymentYear == year);
+        }
+
+        public async Task<List<Payment>> GetByHostelId(Guid hostelId)
+        {
+            return await _context.Payments
+                .Include(x => x.User)
+                .ToListAsync();
         }
     }
 }

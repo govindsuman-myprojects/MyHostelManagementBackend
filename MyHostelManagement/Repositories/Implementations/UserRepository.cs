@@ -47,7 +47,8 @@ namespace MyHostelManagement.Repositories.Implementations
             return await _context.Users
                 .Include(u => u.Role)
                 .Where(u => u.HostelId == hostelId &&
-                            u.Role.RoleName == roleName)
+                            u.Role.RoleName == roleName &&
+                            u.Status == 1)
                 .ToListAsync();
         }
 

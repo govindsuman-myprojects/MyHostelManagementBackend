@@ -14,5 +14,15 @@
 
         public int PendingComplaints { get; set; }
         public decimal MonthExpenses { get; set; }
+
+        public List<PendingPaymentsDto> PendingPayments { get; set; }
+    }
+
+    public class PendingPaymentsDto
+    {
+        public string TenantName { get; set; }
+        public string RoomNumber { get; set; }
+        public DateTime RentDueDate { get; set; }
+        public Decimal RentDueAmount { get; set; }
     }
 }

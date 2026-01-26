@@ -52,8 +52,16 @@ namespace MyHostelManagement.Services.Implementations
                 Amount = payment.Amount,
                 PaymentMonth = payment.PaymentMonth,
                 PaymentYear = payment.PaymentYear,
-                CreatedAt = payment.CreatedAt
+                CreatedAt = payment.CreatedAt,
+
+
             };
+        }
+
+        public async Task<List<PaymentResponseDto>> GetByHostelId(Guid hostelId)
+        {
+            var payments = await _paymentRepo.GetByHostelId(hostelId);
+            return payments.Select(Map).ToList();
         }
     }
 }

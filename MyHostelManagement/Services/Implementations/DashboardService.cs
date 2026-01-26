@@ -63,18 +63,41 @@ namespace MyHostelManagement.Services.Implementations
             };
             var expenses = await _expenseService.GetAsync(filterExpenseDto);
 
+            var paidUserIds = payments
+                    .Select(p => p.UserId)
+                    .ToHashSet();
+
+            var usersWithoutPayments = users
+                .Where(u => !paidUserIds.Contains(u.Id))
+                .ToList();
+            var pendingPayments = new List<PendingPaymentsDto>();
+            foreach (var item in usersWithoutPayments)
+            {
+                var roomNumber = rooms.FirstOrDefault(r => r.Id == item.RoomId);
+                var pendingPayemnt = new PendingPaymentsDto
+                {
+                    TenantName = item.Name,
+                    RoomNumber = roomNumber?.RoomNumber ?? string.Empty,
+                    RentDueDate = item.JoiningDate?.AddDays(-1) ?? DateTime.Today,
+                    RentDueAmount = (decimal)item.RentAmount
+                };
+                pendingPayments.Add(pendingPayemnt);
+            }
+
             return new OwnerDashboardDto
             {
                 OwnerName = hostel?.OwnerName ?? string.Empty,
                 HostelName = hostel?.Name ?? string.Empty,
                 TotalBeds = totalBeds,
+
                 OccupiedBeds = occupiedBeds,
                 VacantBeds = totalBeds - occupiedBeds,
                 TodayReceivedPayments = todayReceivedPayments,
                 MonthReceivedPayments = monthReceivedPayments,
                 MonthPendingPayments = (decimal)(monthTotalPayments - monthReceivedPayments),
                 PendingComplaints = pendingComplaints.Count(),
-                MonthExpenses = expenses.Sum(x => x.Amount)
+                MonthExpenses = expenses.Sum(x => x.Amount),
+                PendingPayments = pendingPayments
             };
         }
 

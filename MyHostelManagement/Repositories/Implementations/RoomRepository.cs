@@ -51,6 +51,7 @@ namespace MyHostelManagement.Repositories.Implementations
                 return await _context.Rooms
                     .Where(r => r.HostelId == hostelId)
                     .OrderBy(r => r.RoomNumber)
+
                     .ToListAsync();
             }
         }

@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using MyHostelManagement.Api.Data;
 using MyHostelManagement.Api.DTOs;
 using MyHostelManagement.Api.Models;
+using MyHostelManagement.DTOs;
+using MyHostelManagement.Models;
 using MyHostelManagement.Repositories.Interfaces;
 
 namespace MyHostelManagement.Repositories.Implementations
@@ -57,6 +59,50 @@ namespace MyHostelManagement.Repositories.Implementations
             return await _context.Payments
                 .Include(x => x.User)
                 .ToListAsync();
+        }
+
+        public async Task<List<PendingPaymentsDto>> GetPendingPayments(Guid hostelId)
+        {
+
+            var filterPaymentDto = new PaymentFilterDto
+            {
+                HostelId = hostelId,
+            };
+            var payments = await GetByHostelId(hostelId);
+            var paidUserIds = payments
+                    .Select(p => p.UserId)
+                    .ToHashSet();
+
+            var users =  await _context.Users
+                                       .Include(u => u.Role)
+                                       .Where(u => u.HostelId == hostelId &&
+                                                   u.Role.RoleName == "Tenant" &&
+                                                   u.Status == 1)
+                                       .ToListAsync();
+
+            var rooms = await _context.Rooms
+                                       .Where(r => r.HostelId == hostelId)
+                                       .OrderBy(r => r.RoomNumber)
+                                       .ToListAsync();
+
+            var usersWithoutPayments = users
+                .Where(u => !paidUserIds.Contains(u.Id))
+                .ToList();
+
+            var pendingPayments = new List<PendingPaymentsDto>();
+            foreach (var item in usersWithoutPayments)
+            {
+                var roomNumber = rooms.FirstOrDefault(r => r.Id == item.RoomId);
+                var pendingPayemnt = new PendingPaymentsDto
+                {
+                    TenantName = item.Name,
+                    RoomNumber = roomNumber?.RoomNumber ?? string.Empty,
+                    RentDueDate = item.JoinDate.AddDays(-1),
+                    RentDueAmount = (decimal)item.RentAmount
+                };
+                pendingPayments.Add(pendingPayemnt);
+            }
+            return pendingPayments;
         }
     }
 }

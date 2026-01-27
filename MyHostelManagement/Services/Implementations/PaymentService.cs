@@ -53,8 +53,6 @@ namespace MyHostelManagement.Services.Implementations
                 PaymentMonth = payment.PaymentMonth,
                 PaymentYear = payment.PaymentYear,
                 CreatedAt = payment.CreatedAt,
-
-
             };
         }
 
@@ -62,6 +60,12 @@ namespace MyHostelManagement.Services.Implementations
         {
             var payments = await _paymentRepo.GetByHostelId(hostelId);
             return payments.Select(Map).ToList();
+        }
+
+        public async Task<List<PendingPaymentsDto>> GetPendingPayments(Guid hostelId)
+        {
+            return await _paymentRepo.GetPendingPayments(hostelId);
+            
         }
     }
 }

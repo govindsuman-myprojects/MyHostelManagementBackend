@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyHostelManagement.Api.DTOs;
+using MyHostelManagement.Api.Models;
 using MyHostelManagement.Api.Services.Interfaces;
 using MyHostelManagement.DTOs;
 using MyHostelManagement.Services.Interfaces;
@@ -15,9 +16,13 @@ namespace MyHostelManagement.Services.Implementations
         private readonly IExpenseService _expenseService;
         private readonly IHostelService _hostelService;
         private readonly ITermsAndConditionsService _trmsAndConditionsService;
+        private readonly IAnnouncementService _announcementService;
+        private readonly IAnnouncementTypeService _announcementTypeService;
+        private readonly IComplaintCategoryService _complaintCategoryService;
 
         public DashboardService(IRoomService roomService, IPaymentService paymentService, IUserService userService, 
-            IComplaintService complaintService, IExpenseService expenseService, IHostelService hostelService, ITermsAndConditionsService trmsAndConditionsService)
+            IComplaintService complaintService, IExpenseService expenseService, IHostelService hostelService, ITermsAndConditionsService trmsAndConditionsService, 
+            IAnnouncementService announcementService, IAnnouncementTypeService announcementTypeService, IComplaintCategoryService complaintCategoryService)
         {
             _roomService = roomService;
             _paymentService = paymentService;
@@ -26,6 +31,9 @@ namespace MyHostelManagement.Services.Implementations
             _expenseService = expenseService;
             _hostelService = hostelService;
             _trmsAndConditionsService = trmsAndConditionsService;
+            _announcementService = announcementService;
+            _announcementTypeService = announcementTypeService;
+            _complaintCategoryService = complaintCategoryService;
         }
 
         // OWNER DASHBOARD
@@ -89,7 +97,6 @@ namespace MyHostelManagement.Services.Implementations
                 OwnerName = hostel?.OwnerName ?? string.Empty,
                 HostelName = hostel?.Name ?? string.Empty,
                 TotalBeds = totalBeds,
-
                 OccupiedBeds = occupiedBeds,
                 VacantBeds = totalBeds - occupiedBeds,
                 TodayReceivedPayments = todayReceivedPayments,
@@ -149,16 +156,52 @@ namespace MyHostelManagement.Services.Implementations
                 rentDue = user.RentAmount - paidAmount;
             }
 
-            return new TenantDashboardDto
+            var annoucments = await _announcementService.GetAsync(new AnnouncementFilterDto
+            {
+                HostelId = user.HostelId,
+                OnlyActive = true
+            });
+            var annoucmentTypes = await _announcementTypeService.GetAllAsync();
+            var hostelAnnoucments = new List<AnnouncementDto>();
+            foreach (var item in annoucments)
+            {
+                var announcmeneType = annoucmentTypes.FirstOrDefault(r => r.Id == item.TypeId);
+                var hostelAnnoucment = new AnnouncementDto
                 {
+                    Subject = item.Subject,
+                    Message = item.Message,
+                    StartDate = item.StartDate ?? DateTime.Today,
+                    EndDate = item.EndDate ?? DateTime.Today,
+                    AnnouncementType = announcmeneType?.TypeName ?? string.Empty
+                };
+                hostelAnnoucments.Add(hostelAnnoucment);
+            }
+
+            var complaintTypes = await _complaintCategoryService.GetAllAsync();
+            var PendingComplaints = new List<ComplaintDto>();
+            foreach (var item in pendingComplaints)
+            {
+                var complaintType = complaintTypes.FirstOrDefault(r => r.Id == item.CategoryId);
+                var complaintDto = new ComplaintDto
+                {
+                    Content = item.Content ?? string.Empty,
+                    CreatedAt = item.CreatedAt,
+                    ComplaintType = complaintType?.CategoryName ?? string.Empty
+                };
+                PendingComplaints.Add(complaintDto);
+            }
+
+            return new TenantDashboardDto
+            {
                     TenantName = user?.Name ?? string.Empty,
                     HostelName = hostel?.Name ?? string.Empty,
                     RoomNumber = room?.RoomNumber ?? string.Empty,
-                    PendingComplaints = pendingComplaints.Count(),
                     TermsAndConditions = termsAndConditions?.Content ?? string.Empty,
                     RentDueDate = rentDue == 0 ? user?.JoiningDate?.AddDays(-1).AddMonths(1) : user?.JoiningDate?.AddDays(-1),
-                    RentDue = rentDue ?? 0
-                };
+                    RentDue = rentDue ?? 0,
+                    Announcements = hostelAnnoucments,
+                    Complaints = PendingComplaints
+            };
         }
     }
 }

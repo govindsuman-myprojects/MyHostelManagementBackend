@@ -55,6 +55,15 @@ public class UserService : IUserService
         };
 
         await _userRepo.CreateAsync(user);
+        if (dto.RoomId != null)
+        {
+            var room = await _roomRepo.GetByIdAsync(dto.RoomId.Value);
+            if (room != null)
+            {
+                room.OccupiedBeds += 1;
+                await _roomRepo.UpdateAsync(room);
+            }
+        }
         return Map(user, role.RoleName);
     }
 

@@ -3,7 +3,7 @@
     public class CreateUserDto
     {
         public Guid HostelId { get; set; }
-        public Guid RoleId { get; set; }
+        public Guid? RoomId { get; set; }
 
         public string? Name { get; set; }
         public decimal? RentAmount { get; set; }

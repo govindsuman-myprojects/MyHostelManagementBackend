@@ -13,25 +13,31 @@ public class UserService : IUserService
     private readonly IMapper _mapper;
     private readonly IUserRepository _userRepo;
     private readonly IRoomRepository _roomRepo;
+    private readonly IRoleRepository _roleRepo;
 
-    public UserService(IMapper mapper, IUserRepository userRepo, IRoomRepository roomRepo)
+    public UserService(IMapper mapper, IUserRepository userRepo, IRoomRepository roomRepo, IRoleRepository roleRepo)
     {
         _mapper = mapper;
         _userRepo = userRepo;
         _roomRepo = roomRepo;
+        _roleRepo = roleRepo;
     }
 
     public async Task<UserResponseDto> CreateAsync(CreateUserDto dto)
     {
-        var role = await _userRepo.GetUserRole(dto.RoleId);
+        var roles = await _roleRepo.GetAllAsync();
+        var role = roles.FirstOrDefault(r => r.RoleName.ToLower() == "Tenant".ToLower());
         if (role == null)
-            throw new Exception("Invalid role");
+        {
+            throw new Exception("Role 'Tenant' not found");
+        }
 
         using var hmac = new HMACSHA256();
         var user = new User
         {
             HostelId = dto.HostelId,
-            RoleId = dto.RoleId,
+            RoleId = role.Id,
+            RoomId = dto.RoomId,
             Name = dto.Name,
             RentAmount = dto.RentAmount,
             RentCycle = dto.RentCycle,

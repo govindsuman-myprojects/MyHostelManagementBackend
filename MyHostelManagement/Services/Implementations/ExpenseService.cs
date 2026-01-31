@@ -21,7 +21,8 @@ namespace MyHostelManagement.Services.Implementations
                 HostelId = dto.HostelId,
                 ExpenseCategoryId = dto.ExpenseCategoryId,
                 ExpenseSubCategory = dto.ExpenseSubCategory,
-                Amount = dto.Amount
+                Amount = dto.Amount,
+                ExpenseDate = dto.ExpenseDate
             };
 
             await _expenseRepository.CreateAsync(expense);
@@ -43,7 +44,8 @@ namespace MyHostelManagement.Services.Implementations
                 ExpenseCategoryId = expense.ExpenseCategoryId,
                 ExpenseSubCategory = expense.ExpenseSubCategory,
                 Amount = expense.Amount,
-                CreatedAt = expense.CreatedAt
+                CreatedAt = expense.CreatedAt,
+                ExpenseDate = expense.ExpenseDate
             };
         }
     }

@@ -32,10 +32,10 @@ namespace MyHostelManagement.Repositories.Implementations
                 query = query.Where(e => e.ExpenseCategoryId == filter.ExpenseCategoryId);
 
             if (filter.Month.HasValue)
-                query = query.Where(e => e.CreatedAt.Month == filter.Month);
+                query = query.Where(e => e.ExpenseDate.Month == filter.Month);
 
             if (filter.Year.HasValue)
-                query = query.Where(e => e.CreatedAt.Year == filter.Year);
+                query = query.Where(e => e.ExpenseDate.Year == filter.Year);
 
             return await query
                 .OrderByDescending(e => e.CreatedAt)

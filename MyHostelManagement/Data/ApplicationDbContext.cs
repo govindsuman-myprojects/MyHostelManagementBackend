@@ -261,6 +261,7 @@ namespace MyHostelManagement.Api.Data
                 entity.Property(e => e.ExpenseCategoryId).HasColumnName("expense_category");
                 entity.Property(e => e.ExpenseSubCategory).HasColumnName("expense_sub_category");
                 entity.Property(e => e.Amount).HasColumnName("amount");
+                entity.Property(e => e.ExpenseDate).HasColumnName("expense_date");
                 entity.Property(e => e.CreatedAt).HasColumnName("created_at");
                 entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
 

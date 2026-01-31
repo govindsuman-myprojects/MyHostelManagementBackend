@@ -70,6 +70,8 @@ namespace MyHostelManagement.Repositories.Implementations
             };
             var payments = await GetByHostelId(hostelId);
             var paidUserIds = payments
+                    .Where(p => p.PaymentMonth == DateTime.UtcNow.Month &&
+                                p.PaymentYear == DateTime.UtcNow.Year)
                     .Select(p => p.UserId)
                     .ToHashSet();
 

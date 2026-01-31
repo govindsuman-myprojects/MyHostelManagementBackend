@@ -12,7 +12,7 @@
 
         public string PhoneNumber { get; set; }
         public string? GurdianName { get; set; }
-        public long? GurdianPhoneNumber { get; set; }
+        public string? GurdianPhoneNumber { get; set; }
 
         public string? AadharCardNumber { get; set; }
         public string? AadharCardFile { get; set; }

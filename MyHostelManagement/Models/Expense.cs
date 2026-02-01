@@ -10,7 +10,7 @@ namespace MyHostelManagement.Models
         public Guid ExpenseCategoryId { get; set; }
         public string? ExpenseSubCategory { get; set; }
         public decimal Amount { get; set; }
-        public DateTime ExpenseDate { get; set; }
+        public DateTime ExpenseDate { get; set; } = DateTime.UtcNow;
 
         // Navigation
         public Hostel Hostel { get; set; } = null!;

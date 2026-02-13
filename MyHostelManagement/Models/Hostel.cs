@@ -6,9 +6,13 @@ namespace MyHostelManagement.Api.Models;
 public class Hostel : BaseEntity
 {
     public Guid Id { get; set; }
-    public string Name { get; set; } = string.Empty; public string? Address { get; set; }
-    public string OwnerName { get; set; } = string.Empty; public long? PhoneNumber { get; set; }
-    
+    public string Name { get; set; } = string.Empty; 
+    public string? Address { get; set; }
+    public string OwnerName { get; set; } = string.Empty; 
+    public string? PhoneNumber { get; set; }
+    public string PasswordHash { get; set; }
+    public string? PasswordSalt { get; set; }
+
     // Navigation
     public ICollection<User> Users { get; set; } = new List<User>(); 
     public ICollection<Room> Rooms { get; set; } = new List<Room>(); 

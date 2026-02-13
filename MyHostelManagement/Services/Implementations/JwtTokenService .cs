@@ -1,4 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using MyHostelManagement.Api.Models;
 using MyHostelManagement.Models;
 using MyHostelManagement.Services.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
@@ -29,6 +30,36 @@ namespace MyHostelManagement.Services.Implementations
             new Claim(ClaimTypes.Role, roleName),
             new Claim("hostelId", user.HostelId.ToString() ?? ""),
             new Claim("userId", user.Id.ToString() ?? "")
+        };
+
+            var token = new JwtSecurityToken(
+                issuer: jwt["Issuer"],
+                audience: jwt["Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(
+                    int.Parse(jwt["AccessTokenExpiryMinutes"])
+                ),
+                signingCredentials: new SigningCredentials(
+                    key,
+                    SecurityAlgorithms.HmacSha256
+                )
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public string GenerateToken(Hostel owner, string roleName)
+        {
+            var jwt = _config.GetSection("Jwt");
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwt["Key"])
+            );
+
+            var claims = new[]
+            {
+            new Claim(JwtRegisteredClaimNames.Sub, owner.Id.ToString()),
+            new Claim(ClaimTypes.Role, roleName),
+            new Claim("hostelId", owner.Id.ToString() ?? ""),
         };
 
             var token = new JwtSecurityToken(

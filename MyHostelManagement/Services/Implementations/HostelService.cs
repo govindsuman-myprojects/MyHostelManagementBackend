@@ -78,7 +78,7 @@ public class HostelService : IHostelService
             Name = hostel.Name,
             Address = hostel.Address,
             OwnerName = hostel.OwnerName,
-            PhoneNumber = (long)hostel.PhoneNumber
+            PhoneNumber = hostel.PhoneNumber
         };
     }
 }

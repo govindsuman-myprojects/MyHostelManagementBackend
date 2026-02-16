@@ -91,6 +91,25 @@ namespace MyHostelManagement.Services.Implementations
                 };
                 pendingPayments.Add(pendingPayemnt);
             }
+            var pendingComplaintsList = new List<PendingComplaintsDto>();
+            var complaintTypes = await _complaintCategoryService.GetAllAsync();
+            foreach (var item in pendingComplaints)
+            {
+                var tenantName = users.FirstOrDefault(x => x.Id == item.UserId);
+                var roomNumber = rooms.FirstOrDefault(r => r.Id == item.RoomId);
+                var complaintCategory = complaintTypes.FirstOrDefault(r => r.Id == item.CategoryId);
+                var pendingComplaint = new PendingComplaintsDto
+                {
+                    id = item.Id,
+                    TenantName = tenantName?.Name,
+                    RoomNumber = roomNumber?.RoomNumber,
+                    ComplaintCategory = complaintCategory?.CategoryName,
+                    Content = item.Content,
+                    CreatedDate = item.CreatedAt
+
+                };
+                pendingComplaintsList.Add(pendingComplaint);
+            }
 
             return new OwnerDashboardDto
             {
@@ -102,9 +121,10 @@ namespace MyHostelManagement.Services.Implementations
                 TodayReceivedPayments = todayReceivedPayments,
                 MonthReceivedPayments = monthReceivedPayments,
                 MonthPendingPayments = (decimal)(monthTotalPayments - monthReceivedPayments),
-                PendingComplaints = pendingComplaints.Count(),
+                PendingComplaintCount = pendingComplaints.Count(),
                 MonthExpenses = expenses.Sum(x => x.Amount),
-                PendingPayments = pendingPayments
+                PendingPayments = pendingPayments,
+                PendingComplaints = pendingComplaintsList,
             };
         }
 

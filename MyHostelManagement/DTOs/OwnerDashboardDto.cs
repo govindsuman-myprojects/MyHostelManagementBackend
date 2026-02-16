@@ -1,4 +1,6 @@
-﻿namespace MyHostelManagement.DTOs
+﻿using MyHostelManagement.DTOs;
+
+namespace MyHostelManagement.DTOs
 {
     public class OwnerDashboardDto
     {
@@ -12,10 +14,11 @@
         public decimal MonthReceivedPayments { get; set; }
         public decimal MonthPendingPayments { get; set; }
 
-        public int PendingComplaints { get; set; }
+        public int PendingComplaintCount { get; set; }
         public decimal MonthExpenses { get; set; }
 
         public List<PendingPaymentsDto> PendingPayments { get; set; }
+        public List<PendingComplaintsDto> PendingComplaints { get; set; }
     }
 
     public class PendingPaymentsDto
@@ -24,5 +27,15 @@
         public string RoomNumber { get; set; }
         public DateTime RentDueDate { get; set; }
         public Decimal RentDueAmount { get; set; }
+    }
+
+    public class PendingComplaintsDto
+    {
+        public Guid id { get; set; }
+        public string? TenantName { get; set; }
+        public string? RoomNumber { get; set; }
+        public string? ComplaintCategory { get; set; }
+        public string? Content { get; set; }
+        public DateTime CreatedDate { get; set; }
     }
 }

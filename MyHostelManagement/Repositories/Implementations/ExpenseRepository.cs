@@ -26,6 +26,7 @@ namespace MyHostelManagement.Repositories.Implementations
         public async Task<List<Expense>> GetByFilterAsync(ExpenseFilterDto filter)
         {
             var query = _context.Expenses
+                .Include(e => e.ExpenseCategory)
                 .Where(e => e.HostelId == filter.HostelId);
 
             if (filter.ExpenseCategoryId.HasValue)

@@ -45,7 +45,8 @@ namespace MyHostelManagement.Services.Implementations
                 ExpenseSubCategory = expense.ExpenseSubCategory,
                 Amount = expense.Amount,
                 CreatedAt = expense.CreatedAt,
-                ExpenseDate = expense.ExpenseDate
+                ExpenseDate = expense.ExpenseDate,
+                ExpenseCategoryName = expense.ExpenseCategory?.CategoryName
             };
         }
     }

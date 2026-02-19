@@ -97,6 +97,7 @@ namespace MyHostelManagement.Repositories.Implementations
                 var roomNumber = rooms.FirstOrDefault(r => r.Id == item.RoomId);
                 var pendingPayemnt = new PendingPaymentsDto
                 {
+                    UserId = item.Id,
                     TenantName = item.Name,
                     RoomNumber = roomNumber?.RoomNumber ?? string.Empty,
                     RentDueDate = item.JoinDate.AddDays(-1),

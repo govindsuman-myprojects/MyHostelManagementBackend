@@ -23,6 +23,7 @@ namespace MyHostelManagement.DTOs
 
     public class PendingPaymentsDto
     {
+        public Guid UserId { get; set; }
         public string TenantName { get; set; }
         public string RoomNumber { get; set; }
         public DateTime RentDueDate { get; set; }

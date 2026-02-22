@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MyHostelManagement.DTOs;
 using Twilio;
 using Twilio.Rest.Verify.V2.Service;
 
@@ -35,7 +36,7 @@ public class OtpController : ControllerBase
     }
 
     [HttpPost("verify")]
-    public async Task<IActionResult> VerifyOtp(string phoneNumber, string code)
+    public async Task<IActionResult> VerifyOtp(VerifyOtpDto verifyOtpDto)
     {
         var accountSid = _config["Twilio:AccountSid"];
         var authToken = _config["Twilio:AuthToken"];
@@ -44,8 +45,8 @@ public class OtpController : ControllerBase
         TwilioClient.Init(accountSid, authToken);
 
         var result = await VerificationCheckResource.CreateAsync(
-            to: phoneNumber,
-            code: code,
+            to: verifyOtpDto.PhoneNumber,
+            code: verifyOtpDto.Code,
             pathServiceSid: serviceSid
         );
 

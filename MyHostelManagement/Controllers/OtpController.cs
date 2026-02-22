@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Twilio;
 using Twilio.Rest.Verify.V2.Service;
 
 namespace MyHostelManagement.Controllers;
 [Route("api/otp")]
 [ApiController]
+[AllowAnonymous]
 public class OtpController : ControllerBase
 {
     private readonly IConfiguration _config;

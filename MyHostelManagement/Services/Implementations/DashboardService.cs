@@ -106,7 +106,7 @@ namespace MyHostelManagement.Services.Implementations
                 MonthPendingPayments = (decimal)(monthTotalPayments - monthReceivedPayments),
                 PendingComplaintCount = pendingComplaints.Count(),
                 MonthExpenses = expenses.Sum(x => x.Amount),
-                PendingPayments = await GetPendingPaymentsAsync(users,payments,rooms),
+                PendingPayments = await GetPendingPaymentsAsync(users, payments, rooms),
                 PendingComplaints = pendingComplaintsList,
             };
         }
@@ -220,7 +220,8 @@ namespace MyHostelManagement.Services.Implementations
                 if (user.JoiningDate != null && user.JoiningDate.Value.Day == 1)
                 {
                     // If joining date is 1 → due date is last day of previous month
-                    dueDate = new DateTime(currentYear, currentMonth, 1).AddDays(-1);
+                    int daysInMonth = DateTime.DaysInMonth(currentYear, currentMonth);
+                    dueDate = new DateTime(currentYear, currentMonth, daysInMonth);
                 }
                 else
                 {
@@ -239,9 +240,9 @@ namespace MyHostelManagement.Services.Implementations
                 //    continue;
                 // 🔹 Get total paid for this tenant this month
                 var totalPaid = payments.Where(p => p.UserId == user.Id &&
-                                p.PaymentMonth == currentMonth &&
-                                p.PaymentYear == currentYear)
-                                .Sum(p => (decimal?)p.Amount) ?? 0;
+                                    p.PaymentMonth == currentMonth &&
+                                    p.PaymentYear == currentYear)
+                                    .Sum(p => (decimal?)p.Amount) ?? 0;
 
                 // 🔹 Check if pending
                 if (totalPaid < user.RentAmount)

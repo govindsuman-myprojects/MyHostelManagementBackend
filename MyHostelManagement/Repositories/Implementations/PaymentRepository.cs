@@ -63,7 +63,6 @@ namespace MyHostelManagement.Repositories.Implementations
 
         public async Task<List<PendingPaymentsDto>> GetPendingPayments(Guid hostelId)
         {
-
             var filterPaymentDto = new PaymentFilterDto
             {
                 HostelId = hostelId,

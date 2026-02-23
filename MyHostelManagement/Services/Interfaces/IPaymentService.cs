@@ -9,7 +9,7 @@ namespace MyHostelManagement.Services.Interfaces
         Task<List<PaymentResponseDto>> GetAsync(PaymentFilterDto filter);
         Task<List<PaymentResponseDto>> GetByHostelId(Guid hostelId);
         Task<List<PendingPaymentsDto>> GetPendingPayments(Guid hostelId);
-
+        Task<List<PendingPaymentsDto>> GetPendingPaymentsAsync(List<UserResponseDto> users, List<PaymentResponseDto> payments, List<RoomResponseDto> rooms);
 
     }
 

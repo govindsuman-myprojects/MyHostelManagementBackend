@@ -1,5 +1,6 @@
 ﻿using MyHostelManagement.Api.DTOs;
 using MyHostelManagement.Api.Models;
+using MyHostelManagement.Api.Services.Implementations;
 using MyHostelManagement.DTOs;
 using MyHostelManagement.Repositories.Implementations;
 using MyHostelManagement.Repositories.Interfaces;
@@ -10,10 +11,16 @@ namespace MyHostelManagement.Services.Implementations
     public class PaymentService : IPaymentService
     {
         private readonly IPaymentRepository _paymentRepo;
+        private readonly IUserService _userService;
+        private readonly IRoomService _roomService;
 
-        public PaymentService(IPaymentRepository paymentRepo)
+
+        public PaymentService(IPaymentRepository paymentRepo, IUserService userService, 
+            IRoomService roomService)
         {
             _paymentRepo = paymentRepo;
+            _userService = userService;
+            _roomService = roomService;
         }
 
         public async Task<PaymentResponseDto> CreateAsync(CreatePaymentDto dto)
@@ -64,8 +71,70 @@ namespace MyHostelManagement.Services.Implementations
 
         public async Task<List<PendingPaymentsDto>> GetPendingPayments(Guid hostelId)
         {
-            return await _paymentRepo.GetPendingPayments(hostelId);
-            
+            var users = await _userService.GetTenantsAsync(hostelId);
+            var filterPaymentDto = new PaymentFilterDto
+            {
+                HostelId = hostelId,
+                Month = DateTime.UtcNow.Month,
+                Year = DateTime.UtcNow.Year
+            };
+            var payments = await GetAsync(filterPaymentDto);
+            var rooms = await _roomService.GetByHostelAsync(hostelId, "All");
+
+            return await GetPendingPaymentsAsync(users, payments, rooms);
+        }
+
+        public async Task<List<PendingPaymentsDto>> GetPendingPaymentsAsync(List<UserResponseDto> users, List<PaymentResponseDto> payments, List<RoomResponseDto> rooms)
+        {
+            var today = DateTime.UtcNow.Date;
+            int currentMonth = today.Month;
+            int currentYear = today.Year;
+            var pendingPayments = new List<PendingPaymentsDto>();
+            foreach (var user in users)
+            {
+                // 🔹 Calculate Due Date for current month
+                DateTime dueDate;
+                if (user.JoiningDate != null && user.JoiningDate.Value.Day == 1)
+                {
+                    // If joining date is 1 → due date is last day of previous month
+                    dueDate = new DateTime(currentYear, currentMonth, 1).AddDays(-1);
+                }
+                else
+                {
+                    int dueDay = user.JoiningDate.Value.Day - 1;
+
+                    // Handle month shorter than due day (Feb case)
+                    int daysInMonth = DateTime.DaysInMonth(currentYear, currentMonth);
+                    if (dueDay > daysInMonth)
+                        dueDay = daysInMonth;
+
+                    dueDate = new DateTime(currentYear, currentMonth, dueDay);
+                }
+
+                //// 🔹 Skip if rent not yet due
+                //if (today < dueDate)
+                //    continue;
+                // 🔹 Get total paid for this tenant this month
+                var totalPaid = payments.Where(p => p.UserId == user.Id &&
+                                p.PaymentMonth == currentMonth &&
+                                p.PaymentYear == currentYear)
+                                .Sum(p => (decimal?)p.Amount) ?? 0;
+
+                // 🔹 Check if pending
+                if (totalPaid < user.RentAmount)
+                {
+                    var pendingPayment = new PendingPaymentsDto
+                    {
+                        UserId = user.Id,
+                        TenantName = user.Name ?? string.Empty,
+                        RoomNumber = rooms.FirstOrDefault(r => r.Id == user.RoomId)?.RoomNumber ?? string.Empty,
+                        RentDueDate = dueDate,
+                        RentDueAmount = (user.RentAmount ?? 0) - totalPaid
+                    };
+                    pendingPayments.Add(pendingPayment);
+                }
+            }
+            return pendingPayments.OrderBy(p => p.RentDueDate).ToList();
         }
     }
 }

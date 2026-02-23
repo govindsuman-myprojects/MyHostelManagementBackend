@@ -1,4 +1,5 @@
-﻿using MyHostelManagement.DTOs;
+﻿using MyHostelManagement.Api.DTOs;
+using MyHostelManagement.DTOs;
 
 namespace MyHostelManagement.Services.Interfaces
 {
@@ -6,5 +7,6 @@ namespace MyHostelManagement.Services.Interfaces
     {
         Task<OwnerDashboardDto> GetOwnerDashboardAsync(Guid hostelId);
         Task<TenantDashboardDto> GetTenantDashboardAsync(Guid userId);
+        Task<List<PendingPaymentsDto>> GetPendingPaymentsAsync(List<UserResponseDto> users, List<PaymentResponseDto> payments, List<RoomResponseDto> rooms);
     }
 }

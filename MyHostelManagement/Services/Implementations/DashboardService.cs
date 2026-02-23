@@ -3,6 +3,7 @@ using MyHostelManagement.Api.DTOs;
 using MyHostelManagement.Api.Models;
 using MyHostelManagement.Api.Services.Interfaces;
 using MyHostelManagement.DTOs;
+using MyHostelManagement.Models;
 using MyHostelManagement.Services.Interfaces;
 
 namespace MyHostelManagement.Services.Implementations
@@ -20,8 +21,8 @@ namespace MyHostelManagement.Services.Implementations
         private readonly IAnnouncementTypeService _announcementTypeService;
         private readonly IComplaintCategoryService _complaintCategoryService;
 
-        public DashboardService(IRoomService roomService, IPaymentService paymentService, IUserService userService, 
-            IComplaintService complaintService, IExpenseService expenseService, IHostelService hostelService, ITermsAndConditionsService trmsAndConditionsService, 
+        public DashboardService(IRoomService roomService, IPaymentService paymentService, IUserService userService,
+            IComplaintService complaintService, IExpenseService expenseService, IHostelService hostelService, ITermsAndConditionsService trmsAndConditionsService,
             IAnnouncementService announcementService, IAnnouncementTypeService announcementTypeService, IComplaintCategoryService complaintCategoryService)
         {
             _roomService = roomService;
@@ -50,6 +51,8 @@ namespace MyHostelManagement.Services.Implementations
             var filterPaymentDto = new PaymentFilterDto
             {
                 HostelId = hostelId,
+                Month = now.Month,
+                Year = now.Year
             };
             var payments = await _paymentService.GetAsync(filterPaymentDto);
             var todayReceivedPayments = payments.Where(p => p.CreatedAt.Date == DateTime.Today).Sum(p => p.Amount);
@@ -71,27 +74,6 @@ namespace MyHostelManagement.Services.Implementations
             };
             var expenses = await _expenseService.GetAsync(filterExpenseDto);
 
-            var paidUserIds = payments
-                    .Select(p => p.UserId)
-                    .ToHashSet();
-
-            var usersWithoutPayments = users
-                .Where(u => !paidUserIds.Contains(u.Id))
-                .ToList();
-            var pendingPayments = new List<PendingPaymentsDto>();
-            foreach (var item in usersWithoutPayments)
-            {
-                var roomNumber = rooms.FirstOrDefault(r => r.Id == item.RoomId);
-                var pendingPayemnt = new PendingPaymentsDto
-                {
-                    UserId = item.Id,
-                    TenantName = item.Name,
-                    RoomNumber = roomNumber?.RoomNumber ?? string.Empty,
-                    RentDueDate = item.JoiningDate?.AddDays(-1) ?? DateTime.Today,
-                    RentDueAmount = (decimal)item.RentAmount
-                };
-                pendingPayments.Add(pendingPayemnt);
-            }
             var pendingComplaintsList = new List<PendingComplaintsDto>();
             var complaintTypes = await _complaintCategoryService.GetAllAsync();
             foreach (var item in pendingComplaints)
@@ -124,7 +106,7 @@ namespace MyHostelManagement.Services.Implementations
                 MonthPendingPayments = (decimal)(monthTotalPayments - monthReceivedPayments),
                 PendingComplaintCount = pendingComplaints.Count(),
                 MonthExpenses = expenses.Sum(x => x.Amount),
-                PendingPayments = pendingPayments,
+                PendingPayments = await GetPendingPaymentsAsync(users,payments,rooms),
                 PendingComplaints = pendingComplaintsList,
             };
         }
@@ -214,15 +196,68 @@ namespace MyHostelManagement.Services.Implementations
 
             return new TenantDashboardDto
             {
-                    TenantName = user?.Name ?? string.Empty,
-                    HostelName = hostel?.Name ?? string.Empty,
-                    RoomNumber = room?.RoomNumber ?? string.Empty,
-                    TermsAndConditions = termsAndConditions?.Content ?? string.Empty,
-                    RentDueDate = rentDue == 0 ? user?.JoiningDate?.AddDays(-1).AddMonths(1) : user?.JoiningDate?.AddDays(-1),
-                    RentDue = rentDue ?? 0,
-                    Announcements = hostelAnnoucments,
-                    Complaints = PendingComplaints
+                TenantName = user?.Name ?? string.Empty,
+                HostelName = hostel?.Name ?? string.Empty,
+                RoomNumber = room?.RoomNumber ?? string.Empty,
+                TermsAndConditions = termsAndConditions?.Content ?? string.Empty,
+                RentDueDate = rentDue == 0 ? user?.JoiningDate?.AddDays(-1).AddMonths(1) : user?.JoiningDate?.AddDays(-1),
+                RentDue = rentDue ?? 0,
+                Announcements = hostelAnnoucments,
+                Complaints = PendingComplaints
             };
+        }
+
+        public async Task<List<PendingPaymentsDto>> GetPendingPaymentsAsync(List<UserResponseDto> users, List<PaymentResponseDto> payments, List<RoomResponseDto> rooms)
+        {
+            var today = DateTime.UtcNow.Date;
+            int currentMonth = today.Month;
+            int currentYear = today.Year;
+            var pendingPayments = new List<PendingPaymentsDto>();
+            foreach (var user in users)
+            {
+                // 🔹 Calculate Due Date for current month
+                DateTime dueDate;
+                if (user.JoiningDate != null && user.JoiningDate.Value.Day == 1)
+                {
+                    // If joining date is 1 → due date is last day of previous month
+                    dueDate = new DateTime(currentYear, currentMonth, 1).AddDays(-1);
+                }
+                else
+                {
+                    int dueDay = user.JoiningDate.Value.Day - 1;
+
+                    // Handle month shorter than due day (Feb case)
+                    int daysInMonth = DateTime.DaysInMonth(currentYear, currentMonth);
+                    if (dueDay > daysInMonth)
+                        dueDay = daysInMonth;
+
+                    dueDate = new DateTime(currentYear, currentMonth, dueDay);
+                }
+
+                //// 🔹 Skip if rent not yet due
+                //if (today < dueDate)
+                //    continue;
+                // 🔹 Get total paid for this tenant this month
+                var totalPaid = payments.Where(p => p.UserId == user.Id &&
+                                p.PaymentMonth == currentMonth &&
+                                p.PaymentYear == currentYear)
+                                .Sum(p => (decimal?)p.Amount) ?? 0;
+
+                // 🔹 Check if pending
+                if (totalPaid < user.RentAmount)
+                {
+                    var pendingPayment = new PendingPaymentsDto
+                    {
+                        UserId = user.Id,
+                        TenantName = user.Name ?? string.Empty,
+                        RoomNumber = rooms.FirstOrDefault(r => r.Id == user.RoomId)?.RoomNumber ?? string.Empty,
+                        RentDueDate = dueDate,
+                        RentDueAmount = (user.RentAmount ?? 0) - totalPaid
+                    };
+                    pendingPayments.Add(pendingPayment);
+                }
+            }
+            return pendingPayments.OrderBy(p => p.RentDueDate).ToList();
         }
     }
 }

@@ -40,6 +40,9 @@ namespace MyHostelManagement.Services.Implementations
                 hmac.ComputeHash(Encoding.UTF8.GetBytes(dto.Password))
             );
 
+            if (computedHash != user.PasswordHash)
+                throw new UnauthorizedAccessException("Invalid credentials");
+
             var role = await _roleRepo.GetByIdAsync(user.RoleId);
             if (role == null)
                 throw new UnauthorizedAccessException("User role not found, Contact administrator");
@@ -108,6 +111,13 @@ namespace MyHostelManagement.Services.Implementations
             //        HostelId = user.HostelId
             //    };
             //}
+        }
+
+        public async Task IsPhoneNumberRegistered(string phoneNumber)
+        {
+            var user = await _userRepo.GetByPhoneAsync(phoneNumber);
+            if (user == null)
+                throw new InvalidOperationException("Phone number not found, Enter valid Phone Number");
         }
     }
 }

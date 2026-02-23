@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using MyHostelManagement.DTOs;
 using MyHostelManagement.Models;
 using MyHostelManagement.Repositories.Interfaces;
@@ -135,6 +136,21 @@ public class UserService : IUserService
             await _roomRepo.UpdateAsync(room); 
             return true;
         }
+    }
+
+    public async Task<bool> UpdatePasswordAsync(Guid id, string password)
+    {
+        var user = await _userRepo.GetByIdAsync(id);
+        if (user == null) return false;
+
+        using var hmac = new HMACSHA256();
+        user.PasswordHash = Convert.ToBase64String(
+               hmac.ComputeHash(Encoding.UTF8.GetBytes(password))
+           );
+        user.PasswordSalt = Convert.ToBase64String(hmac.Key);
+
+        await _userRepo.UpdateAsync(user);
+        return true;
     }
 
     public async Task<bool> DeleteAsync(Guid id)

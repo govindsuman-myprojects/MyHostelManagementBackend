@@ -88,4 +88,15 @@ public class UserController : ControllerBase
 
         return Ok("User deleted successfully");
     }
+
+    // UPDATE USER
+    [HttpPut("update-password/{id}/{password}")]
+    public async Task<IActionResult> UpdatePassword(Guid id, string password)
+    {
+        var updated = await _userService.UpdatePasswordAsync(id, password);
+        if (!updated)
+            return NotFound("User not found");
+
+        return Ok("User updated successfully");
+    }
 }

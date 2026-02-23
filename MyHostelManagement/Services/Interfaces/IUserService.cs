@@ -13,6 +13,7 @@ namespace MyHostelManagement.Services.Interfaces
         Task<bool> DeleteAsync(Guid id);
         Task<bool> AssignRoom(Guid userId, Guid roomId);
         Task<Guid> GetHostelIdUsingUserId(Guid userId);
+        Task<bool> UpdatePasswordAsync(Guid id, string password);
     }
 
 }

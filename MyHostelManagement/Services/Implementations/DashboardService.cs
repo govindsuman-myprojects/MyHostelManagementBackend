@@ -58,7 +58,7 @@ namespace MyHostelManagement.Services.Implementations
             var todayReceivedPayments = payments.Where(p => p.CreatedAt.Date == DateTime.Today).Sum(p => p.Amount);
             var monthReceivedPayments = payments.Where(p => p.PaymentMonth == now.Month && p.PaymentYear == now.Year).Sum(p => p.Amount);
             var users = await _userService.GetTenantsAsync(hostelId);
-            var user = users.FirstOrDefault(x => x.RoleName == "Owner");
+            var owner = await _userService.GetOwnersAsync(hostelId);
             var monthTotalPayments = users.Sum(x => x.RentAmount);
 
             var filterComplaintDto = new ComplaintFilterDto
@@ -97,7 +97,7 @@ namespace MyHostelManagement.Services.Implementations
 
             return new OwnerDashboardDto
             {
-                OwnerName = user.Name ?? string.Empty,
+                OwnerName = owner.First()?.Name ?? string.Empty,
                 HostelName = hostel?.Name ?? string.Empty,
                 TotalBeds = totalBeds,
                 OccupiedBeds = occupiedBeds,

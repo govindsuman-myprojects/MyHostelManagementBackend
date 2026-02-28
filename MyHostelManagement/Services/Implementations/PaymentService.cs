@@ -136,5 +136,37 @@ namespace MyHostelManagement.Services.Implementations
             }
             return pendingPayments.OrderBy(p => p.RentDueDate).ToList();
         }
+
+        public async Task<List<PendingPaymentsDto>> GetRecievedPayments(Guid hostelId)
+        {
+            var users = await _userService.GetTenantsAsync(hostelId);
+            var filterPaymentDto = new PaymentFilterDto
+            {
+                HostelId = hostelId,
+                Month = DateTime.UtcNow.Month,
+                Year = DateTime.UtcNow.Year
+            };
+            var payments = await GetAsync(filterPaymentDto);
+            var rooms = await _roomService.GetByHostelAsync(hostelId, "All");
+            var responeList = new List<PendingPaymentsDto>();
+            if (payments.Any())
+            {
+                foreach (var payment in payments)
+                {
+                    var user = users.Where(x => x.Id == payment.UserId).FirstOrDefault();
+                    var room = rooms.Where(x => x.Id == user?.RoomId).FirstOrDefault();
+                    var pendingPayment = new PendingPaymentsDto
+                    {
+                        RentDueAmount = payment.Amount,
+                        RentDueDate = payment.CreatedAt,
+                        RoomNumber = room?.RoomNumber ?? string.Empty,
+                        TenantName = user?.Name ?? string.Empty,
+                        UserId = payment.UserId,
+                    };
+                    responeList.Add(pendingPayment);
+                }
+            }
+            return responeList;
+        }
     }
 }

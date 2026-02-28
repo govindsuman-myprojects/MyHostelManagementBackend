@@ -50,5 +50,12 @@ public class PaymentController : ControllerBase
     {
         return Ok(await _paymentService.GetPendingPayments(hostelId));
     }
+
+    // GET Pending payments (FILTER)
+    [HttpGet("recieved/{hostelId}")]
+    public async Task<IActionResult> GetRecievedPayments(Guid hostelId)
+    {
+        return Ok(await _paymentService.GetRecievedPayments(hostelId));
+    }
 }
 

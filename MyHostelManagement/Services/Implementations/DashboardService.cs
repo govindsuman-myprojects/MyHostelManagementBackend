@@ -20,10 +20,12 @@ namespace MyHostelManagement.Services.Implementations
         private readonly IAnnouncementService _announcementService;
         private readonly IAnnouncementTypeService _announcementTypeService;
         private readonly IComplaintCategoryService _complaintCategoryService;
+        private readonly INotificationService _notificationService;
 
         public DashboardService(IRoomService roomService, IPaymentService paymentService, IUserService userService,
             IComplaintService complaintService, IExpenseService expenseService, IHostelService hostelService, ITermsAndConditionsService trmsAndConditionsService,
-            IAnnouncementService announcementService, IAnnouncementTypeService announcementTypeService, IComplaintCategoryService complaintCategoryService)
+            IAnnouncementService announcementService, IAnnouncementTypeService announcementTypeService, IComplaintCategoryService complaintCategoryService, 
+            INotificationService notificationService)
         {
             _roomService = roomService;
             _paymentService = paymentService;
@@ -35,6 +37,7 @@ namespace MyHostelManagement.Services.Implementations
             _announcementService = announcementService;
             _announcementTypeService = announcementTypeService;
             _complaintCategoryService = complaintCategoryService;
+            _notificationService = notificationService;
         }
 
         // OWNER DASHBOARD
@@ -94,6 +97,7 @@ namespace MyHostelManagement.Services.Implementations
                 };
                 pendingComplaintsList.Add(pendingComplaint);
             }
+            var notifications = await _notificationService.GetNotifications(hostelId);
 
             return new OwnerDashboardDto
             {
@@ -109,6 +113,7 @@ namespace MyHostelManagement.Services.Implementations
                 MonthExpenses = expenses.Sum(x => x.Amount),
                 PendingPayments = await GetPendingPaymentsAsync(users, payments, rooms),
                 PendingComplaints = pendingComplaintsList,
+                Notifications = notifications,
             };
         }
 

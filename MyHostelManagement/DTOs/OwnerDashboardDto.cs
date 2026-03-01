@@ -19,6 +19,7 @@ namespace MyHostelManagement.DTOs
 
         public List<PendingPaymentsDto> PendingPayments { get; set; }
         public List<PendingComplaintsDto> PendingComplaints { get; set; }
+        public List<NotifcationsResponseDto> Notifications { get; set; }
     }
 
     public class PendingPaymentsDto

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MyHostelManagement.Api.Models;
 using MyHostelManagement.DTOs;
 using MyHostelManagement.Models;
 using MyHostelManagement.Repositories.Interfaces;
@@ -10,11 +11,18 @@ namespace MyHostelManagement.Services.Implementations
     {
         private readonly IMapper _mapper;
         private readonly IComplaintRepository _complaintRepo;
+        private readonly INotificationService _notificationService;
+        private readonly IUserRepository _userRepo;
+        private readonly IComplaintCategoryRepository _complaintCategoryRepo;
 
-        public ComplaintService(IMapper mapper, IComplaintRepository complaintRepo)
+        public ComplaintService(IMapper mapper, IComplaintRepository complaintRepo, INotificationService notificationService,
+            IUserRepository userRepo, IComplaintCategoryRepository complaintCategoryRepo)
         {
             _mapper = mapper;
             _complaintRepo = complaintRepo;
+            _notificationService = notificationService;
+            _userRepo = userRepo;
+            _complaintCategoryRepo = complaintCategoryRepo;
         }
 
         public async Task<ComplaintResponseDto> CreateAsync(CreateComplaintDto dto)
@@ -30,6 +38,15 @@ namespace MyHostelManagement.Services.Implementations
             };
 
             await _complaintRepo.CreateAsync(complaint);
+
+            var user = await _userRepo.GetByIdAsync(dto.UserId);
+            var complaintCategory = await _complaintCategoryRepo.GetByIdAsync(dto.CategoryId);
+            await _notificationService.CreateNotification(
+                                       hostelId: dto.HostelId,
+                                       userId: dto.UserId,
+                                       title: "New Complaint Raised",
+                                       message: $"{user?.Name ?? string.Empty} raised a complaint: {complaintCategory?.CategoryName ?? string.Empty}",
+                                       type: "Complaint");
             return Map(complaint);
         }
 

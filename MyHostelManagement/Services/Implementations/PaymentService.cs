@@ -13,14 +13,15 @@ namespace MyHostelManagement.Services.Implementations
         private readonly IPaymentRepository _paymentRepo;
         private readonly IUserService _userService;
         private readonly IRoomService _roomService;
+        private readonly INotificationService _notificationService;
 
-
-        public PaymentService(IPaymentRepository paymentRepo, IUserService userService, 
-            IRoomService roomService)
+        public PaymentService(IPaymentRepository paymentRepo, IUserService userService,
+            IRoomService roomService, INotificationService notificationService)
         {
             _paymentRepo = paymentRepo;
             _userService = userService;
             _roomService = roomService;
+            _notificationService = notificationService;
         }
 
         public async Task<PaymentResponseDto> CreateAsync(CreatePaymentDto dto)
@@ -40,7 +41,14 @@ namespace MyHostelManagement.Services.Implementations
                 PaymentYear = dto.PaymentYear
             };
 
+            var user = await _userService.GetByIdAsync(dto.UserId);
             await _paymentRepo.CreateAsync(payment);
+            await _notificationService.CreateNotification(
+                                       hostelId: dto.HostelId,
+                                       userId: dto.UserId,
+                                       title: "New Payment Received",
+                                       message: $"₹{payment.Amount} received from {user?.Name ?? string.Empty}",
+                                       type: "Payment");
             return Map(payment);
         }
 

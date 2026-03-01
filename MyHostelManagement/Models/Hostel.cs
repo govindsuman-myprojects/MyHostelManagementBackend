@@ -20,4 +20,5 @@ public class Hostel : BaseEntity
     public ICollection<Complaint> Complaints { get; set; } = new List<Complaint>(); 
     public ICollection<Expense> Expenses { get; set; } = new List<Expense>(); 
     public ICollection<TermsAndConditions> TermsAndConditions { get; set; } = new List<TermsAndConditions>();
+    public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 }

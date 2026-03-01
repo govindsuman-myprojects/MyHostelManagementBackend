@@ -36,5 +36,6 @@ namespace MyHostelManagement.Models
         public int Status { get; set; }
         public ICollection<Payment> Payments { get; set; }
         public ICollection<Complaint> Complaints { get; set; }
+        public ICollection<Notification> Notifications { get; set; }    
     }
 }

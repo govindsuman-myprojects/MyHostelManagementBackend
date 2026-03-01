@@ -23,6 +23,7 @@ namespace MyHostelManagement.Api.Data
         public DbSet<AnnouncementType> AnnouncementTypes { get; set; }
         public DbSet<Announcement> Announcements { get; set; }
         public DbSet<TermsAndConditions> TermsAndConditions { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -335,6 +336,30 @@ namespace MyHostelManagement.Api.Data
                 entity.HasOne(e => e.Role)
                       .WithMany(r => r.TermsAndConditions)
                       .HasForeignKey(e => e.RoleId);
+            });
+
+            builder.Entity<Notification>(entity =>
+            {
+                entity.ToTable("notifications");
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.HostelId).HasColumnName("hostel_id");
+                entity.Property(e => e.UserId).HasColumnName("user_id");
+                entity.Property(e => e.Title).HasColumnName("title");
+                entity.Property(e => e.Message).HasColumnName("message");
+                entity.Property(e => e.Type).HasColumnName("type");
+                entity.Property(e => e.IsRead).HasColumnName("isread");
+                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+
+                // Relationships
+                entity.HasOne(e => e.Hostel)
+                      .WithMany(h => h.Notifications)
+                      .HasForeignKey(e => e.HostelId);
+
+                entity.HasOne(e => e.User)
+                      .WithMany(r => r.Notifications)
+                      .HasForeignKey(e => e.UserId);
             });
         }
 

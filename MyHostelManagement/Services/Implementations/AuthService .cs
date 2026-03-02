@@ -33,7 +33,7 @@ namespace MyHostelManagement.Services.Implementations
         {
             var user = await _userRepo.GetByPhoneAsync(dto.PhoneNumber);
             if (user == null)
-                throw new UnauthorizedAccessException("Invalid credentials");
+                throw new ApiException("Invalid credentials", 401);
 
             using var hmac = new HMACSHA256(
                     Convert.FromBase64String(user.PasswordSalt)
@@ -44,18 +44,20 @@ namespace MyHostelManagement.Services.Implementations
             );
 
             if (computedHash != user.PasswordHash)
-                throw new UnauthorizedAccessException("Invalid credentials");
+                throw new ApiException("Invalid credentials", 401);
 
             var role = await _roleRepo.GetByIdAsync(user.RoleId);
             if (role == null)
-                throw new UnauthorizedAccessException("User role not found, Contact administrator");
+                throw new ApiException("User role not found. Contact administrator.", 403);
             var token = _jwtService.GenerateToken(user, role.RoleName);
 
             // check if owner has valid subscription active
-
             var isValidSubscription = await _subscriptionService.GetCurrentSubscription(user.HostelId);
-            if (isValidSubscription == null || isValidSubscription.EndDate < DateTime.UtcNow)
-                throw new UnauthorizedAccessException("Subscription Expired, Please conatct Administartor");
+            if (isValidSubscription == null)
+                throw new ApiException("No active subscription found.", 403);
+
+            if (isValidSubscription.EndDate < DateTime.UtcNow)
+                throw new ApiException("Subscription expired. Please renew your plan.", 403);
 
             return new AuthResponseDto
             {
@@ -64,62 +66,6 @@ namespace MyHostelManagement.Services.Implementations
                 UserId = user.Id,
                 HostelId = user.HostelId
             };
-
-            //if (dto != null && dto.Role.ToLower() == "Owner".ToLower())
-            //{
-            //    var owner = await _hostelRepo.GetAllAsync();
-            //    var matchedOwner = owner.FirstOrDefault(h => h.PhoneNumber == dto.PhoneNumber);
-            //    if (matchedOwner == null)
-            //        throw new UnauthorizedAccessException("Invalid credentials");
-
-            //    using var hmac1 = new HMACSHA256(
-            //        Convert.FromBase64String(matchedOwner.PasswordSalt)
-            //        );
-
-            //    var computedHash1 = Convert.ToBase64String(
-            //    hmac1.ComputeHash(Encoding.UTF8.GetBytes(dto.Password))
-            //    );
-
-            //    if (computedHash1 != matchedOwner.PasswordHash)
-            //        throw new UnauthorizedAccessException("Invalid credentials");
-
-            //    var token = _jwtService.GenerateToken(matchedOwner, "Owner");
-
-            //    return new AuthResponseDto
-            //    {
-            //        AccessToken = token,
-            //        Role = "Owner",
-            //        HostelId = matchedOwner.Id
-            //    };
-            //}
-            //else
-            //{
-            //    var user = await _userRepo.GetByPhoneAsync(dto.PhoneNumber);
-            //    if (user == null)
-            //        throw new UnauthorizedAccessException("Invalid credentials");
-
-            //    using var hmac = new HMACSHA256(
-            //        Convert.FromBase64String(user.PasswordSalt)
-            //    );
-
-            //    var computedHash = Convert.ToBase64String(
-            //        hmac.ComputeHash(Encoding.UTF8.GetBytes(dto.Password))
-            //    );
-
-            //    if (computedHash != user.PasswordHash)
-            //        throw new UnauthorizedAccessException("Invalid credentials");
-
-            //    var role = await _roleRepo.GetByIdAsync(user.RoleId);
-            //    var token = _jwtService.GenerateToken(user, role.RoleName);
-
-            //    return new AuthResponseDto
-            //    {
-            //        AccessToken = token,
-            //        Role = role.RoleName,
-            //        UserId = user.Id,
-            //        HostelId = user.HostelId
-            //    };
-            //}
         }
 
         public async Task IsPhoneNumberRegistered(string phoneNumber)

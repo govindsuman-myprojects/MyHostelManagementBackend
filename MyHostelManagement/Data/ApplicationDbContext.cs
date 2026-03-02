@@ -24,6 +24,9 @@ namespace MyHostelManagement.Api.Data
         public DbSet<Announcement> Announcements { get; set; }
         public DbSet<TermsAndConditions> TermsAndConditions { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
+        public DbSet<HostelSubscription> HostelSubscriptions { get; set; }
+        public DbSet<SubscriptionPayment> SubscriptionPayments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -360,6 +363,62 @@ namespace MyHostelManagement.Api.Data
                 entity.HasOne(e => e.User)
                       .WithMany(r => r.Notifications)
                       .HasForeignKey(e => e.UserId);
+            });
+
+            builder.Entity<SubscriptionPlan>(entity =>
+            {
+                entity.ToTable("subscription_plans");
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.PlanName).HasColumnName("plan_name");
+                entity.Property(e => e.Description).HasColumnName("description");
+                entity.Property(e => e.Price).HasColumnName("price");
+                entity.Property(e => e.DurationInDays).HasColumnName("duration_in_days");
+                entity.Property(e => e.IsActive).HasColumnName("is_active");
+                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+            });
+
+            builder.Entity<HostelSubscription>(entity =>
+            {
+                entity.ToTable("hostel_subscriptions");
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.HostelId).HasColumnName("hostel_id");
+                entity.Property(e => e.UserId).HasColumnName("user_id");
+                entity.Property(e => e.PlanId).HasColumnName("plan_id");
+                entity.Property(e => e.StartDate).HasColumnName("start_date");
+                entity.Property(e => e.EndDate).HasColumnName("end_date");
+                entity.Property(e => e.Status).HasColumnName("status");
+                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+
+                // 🔥 Relationship with SubscriptionPlan
+                entity.HasOne(e => e.Plan)
+                    .WithMany(p => p.HostelSubscriptions)
+                    .HasForeignKey(e => e.PlanId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<SubscriptionPayment>(entity =>
+            {
+                entity.ToTable("subscription_payments");
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.SubscriptionId).HasColumnName("subscription_id");
+                entity.Property(e => e.HostelId).HasColumnName("hostel_id");
+                entity.Property(e => e.UserId).HasColumnName("user_id");
+                entity.Property(e => e.Amount).HasColumnName("amount");
+                entity.Property(e => e.PaymentMode).HasColumnName("payment_mode");
+                entity.Property(e => e.TransactionId).HasColumnName("transaction_id");
+                entity.Property(e => e.PaymentStatus).HasColumnName("payment_status");
+                entity.Property(e => e.PaymentDate).HasColumnName("payment_date");
+
+                // 🔥 Relationship with HostelSubscription
+                entity.HasOne(e => e.Subscription)
+                    .WithMany(s => s.Payments)
+                    .HasForeignKey(e => e.SubscriptionId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
         }
 

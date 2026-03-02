@@ -13,17 +13,20 @@ namespace MyHostelManagement.Services.Implementations
         private readonly IRoleRepository _roleRepo;
         private readonly IJwtTokenService _jwtService;
         private readonly IHostelRepository _hostelRepo;
+        private readonly ISubscriptionService _subscriptionService;
 
         public AuthService(
             IUserRepository userRepo,
             IRoleRepository roleRepo,
             IJwtTokenService jwtService,
-            IHostelRepository hostelRepo)
+            IHostelRepository hostelRepo,
+            ISubscriptionService subscriptionService)
         {
             _userRepo = userRepo;
             _roleRepo = roleRepo;
             _jwtService = jwtService;
             _hostelRepo = hostelRepo;
+            _subscriptionService = subscriptionService;
         }
 
         public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
@@ -47,6 +50,12 @@ namespace MyHostelManagement.Services.Implementations
             if (role == null)
                 throw new UnauthorizedAccessException("User role not found, Contact administrator");
             var token = _jwtService.GenerateToken(user, role.RoleName);
+
+            // check if owner has valid subscription active
+
+            var isValidSubscription = await _subscriptionService.GetCurrentSubscription(user.HostelId);
+            if (isValidSubscription == null || isValidSubscription.EndDate < DateTime.UtcNow)
+                throw new UnauthorizedAccessException("Subscription Expired, Please conatct Administartor");
 
             return new AuthResponseDto
             {

@@ -33,14 +33,14 @@ namespace MyHostelManagement.Controllers
 
             var daysRemaining = (subscription.EndDate - DateTime.UtcNow).Days;
 
-            return Ok(new
+            return Ok(new SubscriptionResponse
             {
-                subscription.Id,
-                subscription.Plan.PlanName,
-                subscription.Plan.Price,
-                subscription.StartDate,
-                subscription.EndDate,
-                daysRemaining
+                Id = subscription.Id,
+                PlanName = subscription.Plan.PlanName,
+                Price = subscription.Plan.Price,
+                StartDate = subscription.StartDate,
+                EndDate = subscription.EndDate,
+                DaysRemaining = daysRemaining > 0 ? daysRemaining : 0
             });
         }
 

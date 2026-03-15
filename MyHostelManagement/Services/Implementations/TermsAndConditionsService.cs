@@ -42,6 +42,7 @@ namespace MyHostelManagement.Services.Implementations
             var response = new List<TermsResponseDto>();
             foreach (var item in terms)
             {
+                item.Content = $"● {item.Content}";
                 response.Add(Map(item));
             }
             return response;

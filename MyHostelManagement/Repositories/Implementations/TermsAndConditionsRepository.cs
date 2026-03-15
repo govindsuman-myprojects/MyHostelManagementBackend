@@ -22,11 +22,11 @@ namespace MyHostelManagement.Repositories.Implementations
             return terms;
         }
 
-        public async Task<TermsAndConditions?> GetAsync(Guid hostelId, Guid roleId)
+        public async Task<List<TermsAndConditions>> GetAsync(Guid hostelId, Guid roleId)
         {
             return await _context.TermsAndConditions
-                .FirstOrDefaultAsync(t =>
-                    t.HostelId == hostelId);
+                .Where(predicate: t => t.HostelId == hostelId)
+                .ToListAsync();
         }
 
         public async Task<TermsAndConditions?> GetByIdAsync(Guid id)

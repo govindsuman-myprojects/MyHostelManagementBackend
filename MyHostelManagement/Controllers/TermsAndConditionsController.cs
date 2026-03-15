@@ -28,7 +28,7 @@ namespace MyHostelManagement.Controllers
         public async Task<IActionResult> Get(TermsFilterDto filter)
         {
             var result = await _termsService.GetAsync(filter);
-            if (result == null)
+            if (result.Count == 0)
                 return NotFound("Terms not found");
 
             return Ok(result);

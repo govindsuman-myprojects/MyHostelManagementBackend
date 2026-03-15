@@ -16,10 +16,10 @@ namespace MyHostelManagement.Services.Implementations
 
         public async Task<TermsResponseDto> CreateOrUpdateAsync(CreateTermsDto dto)
         {
-            var existing = await _termsRepository.GetAsync(dto.HostelId, dto.RoleId);
+            //var existing = await _termsRepository.GetAsync(dto.HostelId, dto.RoleId);
 
-            if (existing == null)
-            {
+            //if (existing == null)
+            //{
                 var terms = new TermsAndConditions
                 {
                     HostelId = dto.HostelId,
@@ -29,17 +29,22 @@ namespace MyHostelManagement.Services.Implementations
 
                 await _termsRepository.CreateAsync(terms);
                 return Map(terms);
-            }
+            //}
 
-            existing.Content = dto.Content;
-            await _termsRepository.UpdateAsync(existing);
-            return Map(existing);
+            //existing.Content = dto.Content;
+            //await _termsRepository.UpdateAsync(existing);
+            //return Map(existing);
         }
 
-        public async Task<TermsResponseDto?> GetAsync(TermsFilterDto filter)
+        public async Task<List<TermsResponseDto>> GetAsync(TermsFilterDto filter)
         {
             var terms = await _termsRepository.GetAsync(filter.HostelId, filter.RoleId);
-            return terms == null ? null : Map(terms);
+            var response = new List<TermsResponseDto>();
+            foreach (var item in terms)
+            {
+                response.Add(Map(item));
+            }
+            return response;
         }
 
         private static TermsResponseDto Map(TermsAndConditions terms)

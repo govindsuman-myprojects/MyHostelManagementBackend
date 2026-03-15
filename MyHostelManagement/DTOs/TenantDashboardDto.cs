@@ -9,7 +9,7 @@
         public DateTime? RentDueDate { get; set; }
         public List<AnnouncementDto> Announcements { get; set; }
         public List<ComplaintDto> Complaints { get; set; }
-        public string TermsAndConditions { get; set; }
+        public List<TermsResponseDto> TermsAndConditions { get; set; }
     }
 
     public class AnnouncementDto

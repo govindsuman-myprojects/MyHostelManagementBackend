@@ -205,7 +205,7 @@ namespace MyHostelManagement.Services.Implementations
                 TenantName = user?.Name ?? string.Empty,
                 HostelName = hostel?.Name ?? string.Empty,
                 RoomNumber = room?.RoomNumber ?? string.Empty,
-                TermsAndConditions = termsAndConditions?.Content ?? string.Empty,
+                TermsAndConditions = termsAndConditions,
                 RentDueDate = rentDue == 0 ? user?.JoiningDate?.AddDays(-1).AddMonths(1) : user?.JoiningDate?.AddDays(-1),
                 RentDue = rentDue ?? 0,
                 Announcements = hostelAnnoucments,

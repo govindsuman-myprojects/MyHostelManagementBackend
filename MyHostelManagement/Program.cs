@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi;
+using Microsoft.OpenApi.Models;
 using MyHostelManagement.Api.Data;
 using MyHostelManagement.Api.Models;
 using MyHostelManagement.Api.Services.Implementations;
@@ -13,7 +13,6 @@ using MyHostelManagement.Repositories.Interfaces;
 using MyHostelManagement.Services.Implementations;
 using MyHostelManagement.Services.Interfaces;
 using System.Text;
-using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;

@@ -12,6 +12,7 @@ public class Hostel : BaseEntity
     public string? PhoneNumber { get; set; }
     public string PasswordHash { get; set; }
     public string? PasswordSalt { get; set; }
+    public string? UPIId { get; set; }
 
     // Navigation
     public ICollection<User> Users { get; set; } = new List<User>(); 

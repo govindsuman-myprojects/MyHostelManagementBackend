@@ -7,6 +7,7 @@
         public string? Address { get; set; }
         public string? OwnerName { get; set; }
         public string PhoneNumber { get; set; }
+        public string? UPIId { get; set; }
     }
 
 }

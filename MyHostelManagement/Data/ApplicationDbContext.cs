@@ -48,6 +48,7 @@ namespace MyHostelManagement.Api.Data
                 entity.Property(e => e.PhoneNumber).HasColumnName("phone_number");
                 entity.Property(e => e.PasswordHash).HasColumnName("password_hash");
                 entity.Property(e => e.PasswordSalt).HasColumnName("password_salt");
+                entity.Property(e => e.UPIId).HasColumnName("upi_id");
                 entity.Property(e => e.CreatedAt).HasColumnName("created_at");
                 entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
 

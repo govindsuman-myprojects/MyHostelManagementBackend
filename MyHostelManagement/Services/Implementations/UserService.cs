@@ -111,7 +111,7 @@ public class UserService : IUserService
         user.PhoneNumber = dto.PhoneNumber;
         user.GurdianName = dto.GurdianName;
         user.GurdianPhoneNumber = dto.GurdianPhoneNumber;
-        user.MoveOutDate = dto.MoveOutDate;
+        user.MoveOutDate = ToUtc(dto.MoveOutDate);
         user.LockInPeriod = dto.LockInPeriod;
         user.SendWhatsAppReminders = dto.SendWhatsAppReminders;
         user.Status = dto.Status;
@@ -165,6 +165,20 @@ public class UserService : IUserService
 
         await _userRepo.DeleteAsync(user);
         return true;
+    }
+
+    // Npgsql only accepts Utc or Unspecified DateTimes for `timestamp with time zone` columns.
+    // The default JSON DateTime converter can hand us Kind=Local when the client sends an
+    // explicit non-Z offset, which Npgsql rejects outright — normalize before it gets there.
+    private static DateTime? ToUtc(DateTime? value)
+    {
+        if (!value.HasValue) return null;
+        return value.Value.Kind switch
+        {
+            DateTimeKind.Utc => value.Value,
+            DateTimeKind.Local => value.Value.ToUniversalTime(),
+            _ => DateTime.SpecifyKind(value.Value, DateTimeKind.Utc)
+        };
     }
 
     private static UserResponseDto Map(User user, string roleName)

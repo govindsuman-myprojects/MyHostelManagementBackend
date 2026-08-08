@@ -272,6 +272,7 @@ namespace MyHostelManagement.Data
                 entity.Property(e => e.Amount).HasColumnName("amount");
                 entity.Property(e => e.ExpenseDate).HasColumnName("expense_date");
                 entity.Property(e => e.PaymentMode).HasColumnName("payment_mode").HasMaxLength(50);
+                entity.Property(e => e.ReceiptDocument).HasColumnName("receipt_document");
                 entity.Property(e => e.CreatedAt).HasColumnName("created_at");
                 entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
 

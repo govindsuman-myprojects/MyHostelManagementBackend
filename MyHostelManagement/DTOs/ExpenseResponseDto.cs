@@ -11,6 +11,7 @@
         public DateTime CreatedAt { get; set; }
         public DateTime ExpenseDate { get; set; }
         public string? PaymentMode { get; set; }
+        public string? ReceiptDocument { get; set; }
     }
 
 }

@@ -12,6 +12,7 @@ namespace MyHostelManagement.Models
         public decimal Amount { get; set; }
         public DateTime ExpenseDate { get; set; } = DateTime.UtcNow;
         public string? PaymentMode { get; set; }
+        public string? ReceiptDocument { get; set; }
 
         // Navigation
         public Hostel Hostel { get; set; } = null!;

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
-using MyHostelManagement.Api.Models;
-using MyHostelManagement.DTOs;
 using MyHostelManagement.Models;
+using MyHostelManagement.DTOs;
 using MyHostelManagement.Repositories.Interfaces;
 using MyHostelManagement.Services.Interfaces;
 

@@ -1,5 +1,5 @@
-﻿using MyHostelManagement.Api.DTOs;
-using MyHostelManagement.Api.Models;
+﻿using MyHostelManagement.DTOs;
+using MyHostelManagement.Models;
 
 namespace MyHostelManagement.Repositories.Interfaces
 {

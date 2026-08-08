@@ -1,6 +1,5 @@
-﻿using MyHostelManagement.Api.DTOs;
-using MyHostelManagement.Api.Models;
-using MyHostelManagement.DTOs;
+﻿using MyHostelManagement.DTOs;
+using MyHostelManagement.Models;
 
 namespace MyHostelManagement.Repositories.Interfaces
 {
@@ -10,7 +9,6 @@ namespace MyHostelManagement.Repositories.Interfaces
         Task<List<Payment>> GetByFilterAsync(PaymentFilterDto filter);
         Task<bool> ExistsAsync(Guid userId, int month, int year);
         Task<List<Payment>> GetByHostelId(Guid hostelId);
-        Task<List<PendingPaymentsDto>> GetPendingPayments(Guid hostelId);
 
     }
 

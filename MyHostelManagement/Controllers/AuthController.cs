@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyHostelManagement.DTOs;
-using MyHostelManagement.Services;
-using MyHostelManagement.Services.Implementations;
 using MyHostelManagement.Services.Interfaces;
 
 namespace MyHostelManagement.Controllers
@@ -22,19 +20,8 @@ namespace MyHostelManagement.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
-            try
-            {
-                var result = await _service.LoginAsync(dto);
-                return Ok(result);
-            }
-            catch (ApiException ex)
-            {
-                return StatusCode(ex.StatusCode, new
-                {
-                    success = false,
-                    message = ex.Message
-                });
-            }
+            var result = await _service.LoginAsync(dto);
+            return Ok(result);
         }
     }
 }

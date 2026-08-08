@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace MyHostelManagement.Api.Models;
+namespace MyHostelManagement.Models;
 
 public class ApplicationUser : IdentityUser
 {

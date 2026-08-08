@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using MyHostelManagement.Api.Models;
 using MyHostelManagement.Models;
 using MyHostelManagement.Models.Common;
 using System.Reflection.Emit;
 
-namespace MyHostelManagement.Api.Data
+namespace MyHostelManagement.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
@@ -122,6 +121,9 @@ namespace MyHostelManagement.Api.Data
                 entity.Property(e => e.PasswordHash).HasColumnName("password_hash");
                 entity.Property(e => e.PasswordSalt).HasColumnName("password_salt");
                 entity.Property(e => e.RoomId).HasColumnName("room_id");
+                entity.Property(e => e.MoveOutDate).HasColumnName("moveout_date");
+                entity.Property(e => e.LockInPeriod).HasColumnName("lock_in_period");
+                entity.Property(e => e.SendWhatsAppReminders).HasColumnName("send_whatsapp_reminders");
 
                 // Relationships
                 entity.HasOne(e => e.Hostel)

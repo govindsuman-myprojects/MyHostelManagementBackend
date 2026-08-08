@@ -1,8 +1,7 @@
-﻿using MyHostelManagement.Api.DTOs;
-using MyHostelManagement.Api.Models;
-using MyHostelManagement.DTOs;
+﻿using MyHostelManagement.DTOs;
+using MyHostelManagement.Models;
 
-namespace MyHostelManagement.Api.Services.Interfaces;
+namespace MyHostelManagement.Services.Interfaces;
 
 public interface IHostelService
 {

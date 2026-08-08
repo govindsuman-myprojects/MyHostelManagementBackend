@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MyHostelManagement.Api.Services.Interfaces;
-using MyHostelManagement.Api.DTOs;
+using MyHostelManagement.Services.Interfaces;
+using MyHostelManagement.DTOs;
 
-namespace MyHostelManagement.Api.Controllers;
+namespace MyHostelManagement.Controllers;
 
 [ApiController]
 [Route("api/hostels")]

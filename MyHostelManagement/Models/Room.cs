@@ -1,7 +1,7 @@
 ﻿using MyHostelManagement.Models;
 using MyHostelManagement.Models.Common;
 
-namespace MyHostelManagement.Api.Models;
+namespace MyHostelManagement.Models;
 
 public class Room : BaseEntity
 {

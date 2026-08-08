@@ -1,5 +1,4 @@
 ﻿using Microsoft.IdentityModel.Tokens;
-using MyHostelManagement.Api.Models;
 using MyHostelManagement.Models;
 using MyHostelManagement.Services.Interfaces;
 using System.IdentityModel.Tokens.Jwt;

@@ -1,4 +1,4 @@
-﻿namespace MyHostelManagement.Api.DTOs
+﻿namespace MyHostelManagement.DTOs
 {
     public class CreateHostelDto
     {

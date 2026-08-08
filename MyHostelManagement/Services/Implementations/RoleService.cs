@@ -18,7 +18,7 @@ namespace MyHostelManagement.Services.Implementations
         {
             var existing = await _repository.GetByNameAsync(dto.RoleName);
             if (existing != null)
-                throw new Exception("Role already exists");
+                throw new ApiException("Role already exists", StatusCodes.Status409Conflict);
 
             var role = new Role
             {

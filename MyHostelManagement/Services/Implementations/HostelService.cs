@@ -1,14 +1,13 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using MyHostelManagement.Api.DTOs;
-using MyHostelManagement.Api.Models;
-using MyHostelManagement.Api.Services.Interfaces;
 using MyHostelManagement.DTOs;
+using MyHostelManagement.Models;
+using MyHostelManagement.Services.Interfaces;
 using MyHostelManagement.Repositories.Interfaces;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace MyHostelManagement.Api.Services.Implementations;
+namespace MyHostelManagement.Services.Implementations;
 
 public class HostelService : IHostelService
 {

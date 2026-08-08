@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
-using MyHostelManagement.Api.DTOs;
-using MyHostelManagement.Api.Models;
 using MyHostelManagement.DTOs;
+using MyHostelManagement.Models;
 
-namespace MyHostelManagement.Api.Profiles;
+namespace MyHostelManagement.Profiles;
 
 public class MappingProfile : Profile
 {

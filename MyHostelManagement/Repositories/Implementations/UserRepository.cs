@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MyHostelManagement.Api.Data;
+using MyHostelManagement.Data;
 using MyHostelManagement.Models;
 using MyHostelManagement.Repositories.Interfaces;
 using System.Data;

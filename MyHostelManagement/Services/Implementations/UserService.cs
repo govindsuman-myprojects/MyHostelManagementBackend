@@ -7,7 +7,7 @@ using MyHostelManagement.Services.Interfaces;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace MyHostelManagement.Api.Services.Implementations;
+namespace MyHostelManagement.Services.Implementations;
 
 public class UserService : IUserService
 {
@@ -48,6 +48,8 @@ public class UserService : IUserService
             GurdianPhoneNumber = dto.GurdianPhoneNumber,
             AadharCardNumber = dto.AadharCardNumber,
             AadharCardFile = dto.AadharCardFile,
+            LockInPeriod = dto.LockInPeriod,
+            SendWhatsAppReminders = dto.SendWhatsAppReminders,
             PasswordHash = Convert.ToBase64String(
                 hmac.ComputeHash(Encoding.UTF8.GetBytes(dto.Password))
             ),
@@ -109,6 +111,9 @@ public class UserService : IUserService
         user.PhoneNumber = dto.PhoneNumber;
         user.GurdianName = dto.GurdianName;
         user.GurdianPhoneNumber = dto.GurdianPhoneNumber;
+        user.MoveOutDate = dto.MoveOutDate;
+        user.LockInPeriod = dto.LockInPeriod;
+        user.SendWhatsAppReminders = dto.SendWhatsAppReminders;
         user.Status = dto.Status;
 
         await _userRepo.UpdateAsync(user);
@@ -175,7 +180,10 @@ public class UserService : IUserService
             Status = user.Status,
             HostelId = user.HostelId,
             RoomId = user.RoomId,
-            JoiningDate = user.JoinDate
+            JoiningDate = user.JoinDate,
+            MoveOutDate = user.MoveOutDate,
+            LockInPeriod = user.LockInPeriod,
+            SendWhatsAppReminders = user.SendWhatsAppReminders
         };
     }
 }

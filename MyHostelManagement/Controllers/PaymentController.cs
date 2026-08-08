@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MyHostelManagement.Api.DTOs;
 using MyHostelManagement.DTOs;
 using MyHostelManagement.Services.Interfaces;
 
-namespace MyHostelManagement.Api.Controllers;
+namespace MyHostelManagement.Controllers;
 
 [ApiController]
 [Route("api/payments")]
@@ -19,15 +18,8 @@ public class PaymentController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreatePaymentDto dto)
     {
-        try
-        {
-            var result = await _paymentService.CreateAsync(dto);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        var result = await _paymentService.CreateAsync(dto);
+        return Ok(result);
     }
 
     // GET PAYMENTS (FILTER)
@@ -56,6 +48,13 @@ public class PaymentController : ControllerBase
     public async Task<IActionResult> GetRecievedPayments(Guid hostelId)
     {
         return Ok(await _paymentService.GetRecievedPayments(hostelId));
+    }
+
+    // GET all tenants with paid / not-paid status for the current month
+    [HttpGet("status/{hostelId}")]
+    public async Task<IActionResult> GetTenantPaymentStatus(Guid hostelId)
+    {
+        return Ok(await _paymentService.GetTenantPaymentStatusAsync(hostelId));
     }
 }
 

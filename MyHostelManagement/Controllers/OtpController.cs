@@ -23,31 +23,20 @@ public class OtpController : ControllerBase
     [HttpPost("send")]
     public async Task<IActionResult> SendOtp([FromBody] string phoneNumber)
     {
-        try
-        {
-            await _authService.IsPhoneNumberRegistered(phoneNumber);
-            var accountSid = _config["Twilio:AccountSid"];
-            var authToken = _config["Twilio:AuthToken"];
-            var serviceSid = _config["Twilio:VerifyServiceSid"];
+        await _authService.IsPhoneNumberRegistered(phoneNumber);
+        var accountSid = _config["Twilio:AccountSid"];
+        var authToken = _config["Twilio:AuthToken"];
+        var serviceSid = _config["Twilio:VerifyServiceSid"];
 
-            TwilioClient.Init(accountSid, authToken);
+        TwilioClient.Init(accountSid, authToken);
 
-            await VerificationResource.CreateAsync(
-                to: phoneNumber,
-                channel: "sms",
-                pathServiceSid: serviceSid
-            );
+        await VerificationResource.CreateAsync(
+            to: phoneNumber,
+            channel: "sms",
+            pathServiceSid: serviceSid
+        );
 
-            return Ok("OTP Sent");
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = "Something went wrong", error = ex.Message });
-        }
+        return Ok("OTP Sent");
     }
 
     [HttpPost("verify")]

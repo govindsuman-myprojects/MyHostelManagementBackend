@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MyHostelManagement.Api.Services.Interfaces;
 using MyHostelManagement.Services.Interfaces;
 
 namespace MyHostelManagement.Controllers

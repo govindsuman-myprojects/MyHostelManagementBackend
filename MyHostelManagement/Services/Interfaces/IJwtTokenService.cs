@@ -1,5 +1,4 @@
-﻿using MyHostelManagement.Api.Models;
-using MyHostelManagement.Models;
+﻿using MyHostelManagement.Models;
 
 namespace MyHostelManagement.Services.Interfaces
 {

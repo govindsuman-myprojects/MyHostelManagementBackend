@@ -2,7 +2,7 @@
 using MyHostelManagement.DTOs;
 using MyHostelManagement.Services.Interfaces;
 
-namespace MyHostelManagement.Api.Controllers;
+namespace MyHostelManagement.Controllers;
 
 [ApiController]
 [Route("api/rooms")]
@@ -41,11 +41,12 @@ public class RoomsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, UpdateRoomDto dto)
     {
-        var updated = await _roomService.UpdateAsync(id, dto);
-        if (!updated)
+        var hostelId = Guid.Parse(User.FindFirst("hostelId")!.Value);
+        var result = await _roomService.UpdateAsync(id, hostelId, dto);
+        if (result == null)
             return NotFound("Room not found");
 
-        return Ok("Room updated successfully");
+        return Ok(result);
     }
 
     // DELETE ROOM

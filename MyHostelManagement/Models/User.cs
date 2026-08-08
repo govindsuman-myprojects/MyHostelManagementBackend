@@ -1,4 +1,4 @@
-﻿using MyHostelManagement.Api.Models;
+﻿using MyHostelManagement.Models;
 using MyHostelManagement.Enums;
 using MyHostelManagement.Models.Common;
 
@@ -17,25 +17,28 @@ namespace MyHostelManagement.Models
         public Guid? RoomId { get; set; }
         public Room? Room { get; set; }
 
-        public string? Name { get; set; }
+        public string Name { get; set; }
         public decimal? RentAmount { get; set; }
-        public int RentCycle { get; set; }
+        public int? RentCycle { get; set; }
         public decimal? AdvanceAmount { get; set; }
 
         public string PhoneNumber { get; set; }
         public string? GurdianName { get; set; }
         public string? GurdianPhoneNumber { get; set; }
 
-        public string? AadharCardNumber { get; set; }
+        public string AadharCardNumber { get; set; }
         public string? AadharCardFile { get; set; }
 
-        public string PasswordHash { get; set; } 
+        public string PasswordHash { get; set; }
         public string? PasswordSalt { get; set; }
 
         public DateTime JoinDate { get; set; } = DateTime.UtcNow;
+        public DateTime? MoveOutDate { get; set; }
+        public int? LockInPeriod { get; set; }
+        public bool SendWhatsAppReminders { get; set; } = true;
         public int Status { get; set; }
         public ICollection<Payment> Payments { get; set; }
         public ICollection<Complaint> Complaints { get; set; }
-        public ICollection<Notification> Notifications { get; set; }    
+        public ICollection<Notification> Notifications { get; set; }
     }
 }

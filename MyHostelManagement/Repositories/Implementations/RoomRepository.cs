@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using MyHostelManagement.Api.Data;
-using MyHostelManagement.Api.Models;
+using MyHostelManagement.Data;
+using MyHostelManagement.Models;
 using MyHostelManagement.Repositories.Interfaces;
 
 namespace MyHostelManagement.Repositories.Implementations

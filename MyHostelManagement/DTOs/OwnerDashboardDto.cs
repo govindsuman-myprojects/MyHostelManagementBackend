@@ -17,7 +17,7 @@ namespace MyHostelManagement.DTOs
         public int PendingComplaintCount { get; set; }
         public decimal MonthExpenses { get; set; }
 
-        public List<PendingPaymentsDto> PendingPayments { get; set; }
+        public List<TenantPaymentStatusDto> PendingPayments { get; set; }
         public List<PendingComplaintsDto> PendingComplaints { get; set; }
         public List<NotifcationsResponseDto> Notifications { get; set; }
     }

@@ -4,14 +4,12 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using MyHostelManagement.Api.Data;
-using MyHostelManagement.Api.Models;
-using MyHostelManagement.Api.Services.Implementations;
-using MyHostelManagement.Api.Services.Interfaces;
-using MyHostelManagement.Repositories.Implementations;
-using MyHostelManagement.Repositories.Interfaces;
+using MyHostelManagement.Data;
+using MyHostelManagement.Models;
 using MyHostelManagement.Services.Implementations;
 using MyHostelManagement.Services.Interfaces;
+using MyHostelManagement.Repositories.Implementations;
+using MyHostelManagement.Repositories.Interfaces;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,10 +30,12 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     .AddDefaultTokenProviders();
 
 // JWT
-// JWT Key — Use environment variable in Render, fallback for development
-var jwtKey = config["Jwt:Key"]
-             ?? Environment.GetEnvironmentVariable("Jwt__Key")
-             ?? "dev-default-key-change-this"; // fallback to avoid build failure
+var jwtKey = config["Jwt:Key"] ?? Environment.GetEnvironmentVariable("Jwt__Key");
+if (string.IsNullOrWhiteSpace(jwtKey))
+{
+    throw new InvalidOperationException(
+        "Jwt:Key is not configured. Set it via appsettings, `dotnet user-secrets set \"Jwt:Key\" \"...\"` for local dev, or the Jwt__Key environment variable in production.");
+}
 
 var key = Encoding.ASCII.GetBytes(jwtKey);
 
@@ -142,14 +142,19 @@ builder.Services.AddSwaggerGen(c =>
 // Allow static files (for mockup / docs)
 builder.Services.AddDirectoryBrowser();
 
-// Fallter flow
+// CORS — allowed origins are read from config (Cors:AllowedOrigins) so each
+// environment (local dev, production) can list its own frontend URL(s) without a code change.
+var allowedOrigins = config.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
-        b => b.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+    options.AddPolicy("Frontend",
+        b => b.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod());
 });
 
 var app = builder.Build();
+
+app.UseMiddleware<MyHostelManagement.Middleware.ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
@@ -157,7 +162,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("AllowAll");
+app.UseCors("Frontend");
 
 app.UseStaticFiles(); // serve wwwroot
 app.UseRouting();

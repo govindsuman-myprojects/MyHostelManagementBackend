@@ -1,6 +1,5 @@
-﻿using MyHostelManagement.Api.DTOs;
-using MyHostelManagement.Api.Models;
-using MyHostelManagement.DTOs;
+﻿using MyHostelManagement.DTOs;
+using MyHostelManagement.Models;
 using MyHostelManagement.Repositories.Interfaces;
 using MyHostelManagement.Services.Interfaces;
 
@@ -43,10 +42,18 @@ public class RoomService : IRoomService
         return rooms.Select(Map).ToList();
     }
 
-    public async Task<bool> UpdateAsync(Guid id, UpdateRoomDto dto)
+    public async Task<RoomResponseDto?> UpdateAsync(Guid id, Guid hostelId, UpdateRoomDto dto)
     {
         var room = await _roomRepo.GetByIdAsync(id);
-        if (room == null) return false;
+        if (room == null || room.HostelId != hostelId)
+            return null;
+
+        if (dto.TotalBeds < room.OccupiedBeds)
+        {
+            throw new ApiException(
+                $"Cannot set total beds to {dto.TotalBeds}; room currently has {room.OccupiedBeds} occupied bed(s).",
+                StatusCodes.Status400BadRequest);
+        }
 
         room.RoomNumber = dto.RoomNumber;
         room.TotalBeds = dto.TotalBeds;
@@ -54,7 +61,7 @@ public class RoomService : IRoomService
         room.Type = dto.Type;
 
         await _roomRepo.UpdateAsync(room);
-        return true;
+        return Map(room);
     }
 
     public async Task<bool> DeleteAsync(Guid id)

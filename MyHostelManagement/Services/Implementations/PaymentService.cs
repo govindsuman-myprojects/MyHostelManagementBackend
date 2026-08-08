@@ -1,7 +1,6 @@
-﻿using MyHostelManagement.Api.DTOs;
-using MyHostelManagement.Api.Models;
-using MyHostelManagement.Api.Services.Implementations;
-using MyHostelManagement.DTOs;
+﻿using MyHostelManagement.DTOs;
+using MyHostelManagement.Models;
+using MyHostelManagement.Services.Implementations;
 using MyHostelManagement.Repositories.Implementations;
 using MyHostelManagement.Repositories.Interfaces;
 using MyHostelManagement.Services.Interfaces;
@@ -30,7 +29,7 @@ namespace MyHostelManagement.Services.Implementations
                 dto.UserId, dto.PaymentMonth, dto.PaymentYear);
 
             if (exists)
-                throw new Exception("Payment already exists for this month");
+                throw new ApiException("Payment already exists for this month", StatusCodes.Status409Conflict);
 
             var payment = new Payment
             {
@@ -98,51 +97,102 @@ namespace MyHostelManagement.Services.Implementations
             int currentMonth = today.Month;
             int currentYear = today.Year;
             var pendingPayments = new List<PendingPaymentsDto>();
+
             foreach (var user in users)
             {
-                // 🔹 Calculate Due Date for current month
-                DateTime dueDate;
-                if (user.JoiningDate != null && user.JoiningDate.Value.Day == 1)
-                {
-                    // If joining date is 1 → due date is last day of previous month
-                    dueDate = new DateTime(currentYear, currentMonth, 1).AddDays(-1);
-                }
-                else
-                {
-                    int dueDay = user.JoiningDate.Value.Day - 1;
+                if (!user.JoiningDate.HasValue)
+                    continue;
 
-                    // Handle month shorter than due day (Feb case)
-                    int daysInMonth = DateTime.DaysInMonth(currentYear, currentMonth);
-                    if (dueDay > daysInMonth)
-                        dueDay = daysInMonth;
+                var dueDate = ComputeDueDate(user.JoiningDate.Value, currentYear, currentMonth);
 
-                    dueDate = new DateTime(currentYear, currentMonth, dueDay);
-                }
+                // Tenant joined after this period's due date — first month not yet owed
+                if (user.JoiningDate.Value.Date > dueDate.Date)
+                    continue;
 
-                //// 🔹 Skip if rent not yet due
-                //if (today < dueDate)
-                //    continue;
-                // 🔹 Get total paid for this tenant this month
-                var totalPaid = payments.Where(p => p.UserId == user.Id &&
+                // Due date hasn't arrived yet this month
+                if (today < dueDate)
+                    continue;
+
+                var totalPaid = payments
+                    .Where(p => p.UserId == user.Id &&
                                 p.PaymentMonth == currentMonth &&
                                 p.PaymentYear == currentYear)
-                                .Sum(p => (decimal?)p.Amount) ?? 0;
+                    .Sum(p => (decimal?)p.Amount) ?? 0;
 
-                // 🔹 Check if pending
                 if (totalPaid < user.RentAmount)
                 {
-                    var pendingPayment = new PendingPaymentsDto
+                    pendingPayments.Add(new PendingPaymentsDto
                     {
                         UserId = user.Id,
                         TenantName = user.Name ?? string.Empty,
                         RoomNumber = rooms.FirstOrDefault(r => r.Id == user.RoomId)?.RoomNumber ?? string.Empty,
                         RentDueDate = dueDate,
                         RentDueAmount = (user.RentAmount ?? 0) - totalPaid
-                    };
-                    pendingPayments.Add(pendingPayment);
+                    });
                 }
             }
+
             return pendingPayments.OrderBy(p => p.RentDueDate).ToList();
+        }
+
+        public async Task<List<TenantPaymentStatusDto>> GetTenantPaymentStatusAsync(Guid hostelId)
+        {
+            var today = DateTime.UtcNow.Date;
+            int currentMonth = today.Month;
+            int currentYear = today.Year;
+
+            var users = await _userService.GetTenantsAsync(hostelId);
+            var payments = await GetAsync(new PaymentFilterDto
+            {
+                HostelId = hostelId,
+                Month = currentMonth,
+                Year = currentYear
+            });
+            var rooms = await _roomService.GetByHostelAsync(hostelId, "All");
+
+            var result = new List<TenantPaymentStatusDto>();
+
+            foreach (var user in users)
+            {
+                if (!user.JoiningDate.HasValue)
+                    continue;
+
+                var dueDate = ComputeDueDate(user.JoiningDate.Value, currentYear, currentMonth);
+
+                // Tenant joined after this period's due date — not liable yet for this month
+                if (user.JoiningDate.Value.Date > dueDate.Date)
+                    continue;
+
+                var amountPaid = payments
+                    .Where(p => p.UserId == user.Id)
+                    .Sum(p => p.Amount);
+
+                result.Add(new TenantPaymentStatusDto
+                {
+                    UserId = user.Id,
+                    TenantName = user.Name ?? string.Empty,
+                    RoomNumber = rooms.FirstOrDefault(r => r.Id == user.RoomId)?.RoomNumber ?? string.Empty,
+                    RentAmount = user.RentAmount ?? 0,
+                    RentDueDate = dueDate,
+                    IsPaid = amountPaid >= (user.RentAmount ?? 0),
+                    AmountPaid = amountPaid
+                });
+            }
+
+            // Unpaid first, then paid; within each group ordered by due date
+            return result
+                .OrderBy(r => r.IsPaid)
+                .ThenBy(r => r.RentDueDate)
+                .ToList();
+        }
+
+        private static DateTime ComputeDueDate(DateTime joinDate, int year, int month)
+        {
+            int joinDay = joinDate.Day;
+            if (joinDay == 1)
+                return new DateTime(year, month, 1).AddDays(-1);
+            int dueDay = Math.Min(joinDay - 1, DateTime.DaysInMonth(year, month));
+            return new DateTime(year, month, dueDay);
         }
 
         public async Task<List<PendingPaymentsDto>> GetRecievedPayments(Guid hostelId)

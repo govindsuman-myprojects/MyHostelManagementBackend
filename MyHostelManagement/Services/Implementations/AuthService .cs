@@ -72,7 +72,7 @@ namespace MyHostelManagement.Services.Implementations
         {
             var user = await _userRepo.GetByPhoneAsync(phoneNumber);
             if (user == null)
-                throw new InvalidOperationException("Phone number not found, Enter valid Phone Number");
+                throw new ApiException("Phone number not found, Enter valid Phone Number", StatusCodes.Status400BadRequest);
         }
     }
 }

@@ -7,5 +7,8 @@ namespace MyHostelManagement.Repositories.Interfaces
     {
         Task<Expense> CreateAsync(Expense expense);
         Task<List<Expense>> GetByFilterAsync(ExpenseFilterDto filter);
+        Task<Expense?> GetByIdAsync(Guid id);
+        Task UpdateAsync(Expense expense);
+        Task DeleteAsync(Expense expense);
     }
 }

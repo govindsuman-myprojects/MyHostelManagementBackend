@@ -47,6 +47,32 @@ namespace MyHostelManagement.Services.Implementations
             return expenses.Select(Map).ToList();
         }
 
+        public async Task<ExpenseResponseDto?> UpdateAsync(Guid id, Guid hostelId, UpdateExpenseDto dto)
+        {
+            var expense = await _expenseRepository.GetByIdAsync(id);
+            if (expense == null || expense.HostelId != hostelId)
+                return null;
+
+            expense.ExpenseCategoryId = dto.ExpenseCategoryId;
+            expense.ExpenseSubCategory = dto.ExpenseSubCategory;
+            expense.Amount = dto.Amount;
+            expense.ExpenseDate = ToUtc(dto.ExpenseDate);
+            expense.PaymentMode = dto.PaymentMode;
+
+            await _expenseRepository.UpdateAsync(expense);
+            return Map(expense);
+        }
+
+        public async Task<bool> DeleteAsync(Guid id, Guid hostelId)
+        {
+            var expense = await _expenseRepository.GetByIdAsync(id);
+            if (expense == null || expense.HostelId != hostelId)
+                return false;
+
+            await _expenseRepository.DeleteAsync(expense);
+            return true;
+        }
+
         private static ExpenseResponseDto Map(Expense expense)
         {
             return new ExpenseResponseDto
